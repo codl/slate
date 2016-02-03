@@ -1,0 +1,50 @@
+body {
+    margin: 0;
+    font-family: "Liberation Sans";
+    font-size: 1.5em;
+}
+
+.scene {
+    width: 1280px;
+    height: 720px;
+    background: magenta;
+    position: relative;
+}
+
+.nowplaying {
+    position: absolute;
+    bottom: 3em; left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.nowplaying p {
+    margin: 0 0;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    padding: .6em;
+    padding-left: .4em;
+    padding-right: 1em;
+    will-change: transform;
+    transform: translateX(-100%);
+    transition: transform .6s;
+    font-weight: bold;
+}
+
+.nowplaying p.small {
+    padding-top: .3em;
+    padding-bottom: .3em;
+    font-size: .7em;
+}
+
+.nowplaying p.small:first-child { padding-top: .6em; }
+.nowplaying p.small:last-child { padding-bottom: .6em; }
+
+.nowplaying p:nth-child(2){ transition-delay: 100ms; }
+.nowplaying p:nth-child(3){ transition-delay: 200ms; }
+.nowplaying p:nth-child(4){ transition-delay: 300ms; }
+
+.nowplaying.show p {
+    transform: translateX(0);
+}
