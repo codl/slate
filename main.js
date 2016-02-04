@@ -29,8 +29,7 @@ app.on('ready', function() {
     // and load the index.html of the app.
     mainWindow.loadURL('file://' + __dirname + '/index.html');
 
-    // Open the DevTools.
-    mainWindow.webContents.openDevTools();
+    //mainWindow.webContents.openDevTools();
 
     // Emitted when the window is closed.
     mainWindow.on('closed', function() {
@@ -51,7 +50,6 @@ app.on('ready', function() {
     function send_song(){
         client.sendCommand("currentsong", function(err, msg){
             if (err) throw err;
-            console.log(msg);
             var song = extract_mpd_info(msg);
 
             var hash = song.file;

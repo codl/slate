@@ -48,3 +48,17 @@ body {
 .nowplaying.show p {
     transform: translateX(0);
 }
+
+
+
+.chat {
+    position: absolute;
+    top:0;
+    right: 0;
+    height: 720px;
+    width: 160px;
+}
+
+.chat webview.hidden {
+    visibility: hidden;
+}

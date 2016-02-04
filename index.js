@@ -1,4 +1,6 @@
 function init(){
+    var fs = require("fs");
+
     var hidetimeout;
     function update_song(_, song){
         var np = document.querySelector(".nowplaying");
@@ -17,7 +19,7 @@ function init(){
             var title = document.createElement("p");
             title.appendChild(document.createTextNode(song.Title));
             np.appendChild(title);
-        } else {
+        } else if("file" in song) {
             var file = document.createElement("p");
             file.appendChild(document.createTextNode(song.file));
             np.appendChild(file);
@@ -48,5 +50,20 @@ function init(){
 
     var ipc = require("electron").ipcRenderer;
     ipc.on("mpd", update_song);
-}
 
+
+    var chat = document.querySelector(".chat");
+    var google = document.createElement("webview");
+    google.addEventListener("dom-ready", function(){
+        fs.readFile(__dirname + "/google.css", "utf8", function(err, css){
+            if(err) throw err;
+            google.insertCSS(css);
+            console.log("ass");
+            google.classList.remove("hidden");
+            google.openDevTools();
+        });
+    });
+    google.classList.add("hidden");
+    google.src = "https://www.youtube.com/live_chat?is_popout=1&v=7d576UsZFV8";
+    chat.appendChild(google);
+}
