@@ -40,11 +40,20 @@ function init(){
             name.classList.add("small");
             np.appendChild(name);
         }
+
+        if(document.querySelector("#mpd-toggle").checked){
+            show_now_playing();
+        }
+    }
+
+    function show_now_playing(){
+        var np = document.querySelector(".nowplaying");
         window.setTimeout(function(){ np.classList.add("show"); }, 100);
 
         if(hidetimeout){
             window.clearTimeout(hidetimeout);
         }
+
         hidetimeout = window.setTimeout(function(){ np.classList.remove("show"); }, 5000);
     }
 
