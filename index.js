@@ -1,5 +1,6 @@
 function init(){
     var fs = require("fs");
+    var process = require("process");
 
     var hidetimeout;
     function update_song(_, song){
@@ -116,8 +117,13 @@ function init(){
     chat_selector.addEventListener("change", update_chat_form);
 
     var config = {};
-    // TODO actually get the fuckin xsomething path
-    fs.readFile("/home/codl/.config/slate.json", "utf8", function(err, content){
+    var config_file;
+    if("XDG_CONFIG_HOME" in process.env && process.env["XDG_CONFIG_HOME"] != "")
+        config_file = process.env["XDG_CONFIG_HOME"] + "/slate.json";
+    else
+        config_file = process.env["HOME"] + "/.config/slate.json";
+
+    fs.readFile(config_file, "utf8", function(err, content){
         if(err) return;
         config = JSON.parse(content);
         var keys = Object.keys(config);
@@ -141,8 +147,7 @@ function init(){
         config["yt-url"] = document.querySelector("#yt-url").value;
         config["mpd-toggle"] = document.querySelector("#mpd-toggle").checked;
         var content = JSON.stringify(config);
-        // TODO ditto
-        fs.writeFile("/home/codl/.config/slate.json", content);
+        fs.writeFile(config_file, content);
     }
 
     document.querySelector("#chat-type").addEventListener("change", save_config);
