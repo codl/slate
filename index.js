@@ -75,11 +75,25 @@ function init(){
                 fs.readFile(__dirname + "/chat_css/youtube.css", "utf8", function(err, css){
                     if(err) throw err;
                     wv.insertCSS(css);
-                    wv.classList.remove("hidden");
                 });
             });
-            wv.classList.add("hidden");
             wv.src = url;
+            chat.appendChild(wv);
+        }
+        else if(chattype == "picarto"){
+            var channel = document.querySelector("#picarto-channel").value;
+            var wv = document.createElement("webview");
+            wv.addEventListener("dom-ready", function(){
+                fs.readFile(__dirname + "/chat_css/picarto.css", "utf8", function(err, css){
+                    if(err) throw err;
+                    wv.insertCSS(css);
+                });
+                fs.readFile(__dirname + "/chat_js/picarto.js", "utf8", function(err, js){
+                    if(err) throw err;
+                    wv.executeJavaScript(js);
+                });
+            });
+            wv.src = "https://picarto.tv/chatpopout/"+channel+"/public";
             chat.appendChild(wv);
         }
     }
@@ -87,7 +101,7 @@ function init(){
     var makechatbutton = document.querySelector("#make-chat");
     makechatbutton.addEventListener("click", make_chat);
 
-    const chat_types = [ "youtube" ];
+    const chat_types = [ "youtube", "picarto", "none" ];
 
     function update_chat_form(){
         var controls = document.querySelector("#chat-controls");
