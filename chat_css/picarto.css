@@ -39,9 +39,9 @@ html .ptvadminicon {
     display: none;
 }
 
-.msgUsername,
-.msgAdminUsername,
-.msgModUsername {
+html .msgUsername,
+html .msgAdminUsername,
+html .msgModUsername {
     color: white!important; /* again, gross */
     font-weight: bold;
     font-family: roboto;
