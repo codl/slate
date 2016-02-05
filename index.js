@@ -89,14 +89,36 @@ function init(){
 
     const chat_types = [ "youtube" ];
 
-    var chat_selector = document.querySelector("#chat-type");
-    chat_selector.addEventListener("change", function update_chat_form(){
+    function update_chat_form(){
         var controls = document.querySelector("#chat-controls");
         var chattype = document.querySelector("#chat-type").value;
         for(type of chat_types){
             controls.classList.remove(type);
         }
         controls.classList.add(chattype);
+    }
+
+    var chat_selector = document.querySelector("#chat-type");
+    chat_selector.addEventListener("change", update_chat_form);
+
+    var config = {};
+    // TODO actually get the fuckin xsomething path
+    fs.readFile("/home/codl/.config/slate.json", "utf8", function(err, content){
+        if(err) return;
+        config = JSON.parse(content);
+        var keys = Object.keys(config);
+        for(key of keys){
+            var el = document.querySelector("#" + key);
+            if(el){
+                if(el.type == "checkbox"){
+                    el.checked = config[key];
+                } else {
+                    el.value = config[key];
+                }
+            }
+        }
+        update_chat_form();
+        make_chat();
     });
 }
 
