@@ -86,5 +86,17 @@ function init(){
 
     var makechatbutton = document.querySelector("#make-chat");
     makechatbutton.addEventListener("click", make_chat);
+
+    const chat_types = [ "youtube" ];
+
+    var chat_selector = document.querySelector("#chat-type");
+    chat_selector.addEventListener("change", function update_chat_form(){
+        var controls = document.querySelector("#chat-controls");
+        var chattype = document.querySelector("#chat-type").value;
+        for(type of chat_types){
+            controls.classList.remove(type);
+        }
+        controls.classList.add(chattype);
+    });
 }
 

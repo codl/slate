@@ -77,3 +77,11 @@ body {
 .chat webview.hidden {
     visibility: hidden;
 }
+
+#chat-controls .url {
+    display: none;
+}
+
+#chat-controls.youtube .url.youtube {
+    display: block;
+}
