@@ -79,7 +79,7 @@ function init(){
                 });
             });
             wv.classList.add("hidden");
-            wv.src = "https://www.youtube.com/live_chat?is_popout=1&v=7d576UsZFV8";
+            wv.src = url;
             chat.appendChild(wv);
         }
     }
