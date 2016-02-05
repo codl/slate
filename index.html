@@ -7,10 +7,22 @@
     <body>
         <div class="scene">
             <div class="nowplaying">
-                <p>Neil Cicierega</p>
-                <p>Crocodile Chop</p>
             </div>
             <div class="chat">
+            </div>
+        </div>
+        <div class="controls">
+            <div>
+                <p>Chat:
+                    <select id="chat-type">
+                        <option selected value="none">None</option>
+                        <option value="youtube">Youtube</option>
+                    </select>
+                </p>
+                <p class="yt">Youtube popout chat url:
+                    <input id="yt-url" placeholder="https://www.youtube.com/live_chat?..."/>
+                </p>
+                <p><button id="make-chat">Lez go</button></p>
             </div>
         </div>
     </body>

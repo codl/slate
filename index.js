@@ -51,18 +51,31 @@ function init(){
     var ipc = require("electron").ipcRenderer;
     ipc.on("mpd", update_song);
 
+    function make_chat(){
+        var chat = document.querySelector(".chat");
+        var children = Array.from(chat.childNodes);
+        for(child of children){
+            chat.removeChild(child);
+        }
 
-    var chat = document.querySelector(".chat");
-    var youtube = document.createElement("webview");
-    youtube.addEventListener("dom-ready", function(){
-        fs.readFile(__dirname + "/chat_css/youtube.css", "utf8", function(err, css){
-            if(err) throw err;
-            youtube.insertCSS(css);
-            console.log("ass");
-            youtube.classList.remove("hidden");
-        });
-    });
-    youtube.classList.add("hidden");
-    youtube.src = "https://www.youtube.com/live_chat?is_popout=1&v=7d576UsZFV8";
-    chat.appendChild(youtube);
+        var chattype = document.querySelector("#chat-type").value;
+        if(chattype == "youtube"){
+            var url = document.querySelector("#yt-url").value;
+            var wv = document.createElement("webview");
+            wv.addEventListener("dom-ready", function(){
+                fs.readFile(__dirname + "/chat_css/youtube.css", "utf8", function(err, css){
+                    if(err) throw err;
+                    wv.insertCSS(css);
+                    wv.classList.remove("hidden");
+                });
+            });
+            wv.classList.add("hidden");
+            wv.src = "https://www.youtube.com/live_chat?is_popout=1&v=7d576UsZFV8";
+            chat.appendChild(wv);
+        }
+    }
+
+    var makechatbutton = document.querySelector("#make-chat");
+    makechatbutton.addEventListener("click", make_chat);
 }
+
