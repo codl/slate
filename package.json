@@ -10,5 +10,15 @@
     },
     "devDependencies": {
         "electron-prebuilt": "^0.36.0"
-    }
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/codl/slate.git"
+    },
+    "author": "codl <codl@codl.fr>",
+    "license": "BSD-3-Clause",
+    "bugs": {
+        "url": "https://github.com/codl/slate/issues"
+    },
+    "homepage": "https://github.com/codl/slate#readme"
 }
