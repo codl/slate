@@ -1,4 +1,5 @@
-html .live-chat-page {
+html .live-chat-page,
+html .live-chat-widget.dark {
     background: magenta;
 }
 
@@ -11,6 +12,7 @@ html #live-comments-controls {
 }
 
 html .live-chat-widget .byline,
+html .live-chat-widget.dark .byline,
 html .live-chat-widget .comment-text {
     color: white;
     font-weight: bold;
@@ -28,7 +30,8 @@ html .live-chat-widget .comment:nth-of-type(1){
     margin-top: 1000px;
 }
 
-html .live-chat-widget .comment:nth-of-type(n){
+html .live-chat-widget .comment:nth-of-type(n),
+html .live-chat-widget.dark .comment:nth-of-type(n){
     background: rgba(0,0,0,0.6);
     animation: hidecomment .6s 8s 1 forwards;
     will-change: transform;
