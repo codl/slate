@@ -145,6 +145,9 @@ function init(){
         fs.writeFile("/home/codl/.config/slate.json", content);
     }
 
-    document.querySelector("#save").addEventListener("click", save_config);
+    document.querySelector("#chat-type").addEventListener("change", save_config);
+    document.querySelector("#picarto-channel").addEventListener("change", save_config);
+    document.querySelector("#yt-url").addEventListener("change", save_config);
+    document.querySelector("#mpd-toggle").addEventListener("change", save_config);
 }
 
