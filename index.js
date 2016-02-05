@@ -134,5 +134,17 @@ function init(){
         update_chat_form();
         make_chat();
     });
+
+    function save_config(){
+        config["chat-type"] = document.querySelector("#chat-type").value;
+        config["picarto-channel"] = document.querySelector("#picarto-channel").value;
+        config["yt-url"] = document.querySelector("#yt-url").value;
+        config["mpd-toggle"] = document.querySelector("#mpd-toggle").checked;
+        var content = JSON.stringify(config);
+        // TODO ditto
+        fs.writeFile("/home/codl/.config/slate.json", content);
+    }
+
+    document.querySelector("#save").addEventListener("click", save_config);
 }
 
