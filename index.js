@@ -53,17 +53,16 @@ function init(){
 
 
     var chat = document.querySelector(".chat");
-    var google = document.createElement("webview");
-    google.addEventListener("dom-ready", function(){
-        fs.readFile(__dirname + "/google.css", "utf8", function(err, css){
+    var youtube = document.createElement("webview");
+    youtube.addEventListener("dom-ready", function(){
+        fs.readFile(__dirname + "/chat_css/youtube.css", "utf8", function(err, css){
             if(err) throw err;
-            google.insertCSS(css);
+            youtube.insertCSS(css);
             console.log("ass");
-            google.classList.remove("hidden");
-            google.openDevTools();
+            youtube.classList.remove("hidden");
         });
     });
-    google.classList.add("hidden");
-    google.src = "https://www.youtube.com/live_chat?is_popout=1&v=7d576UsZFV8";
-    chat.appendChild(google);
+    youtube.classList.add("hidden");
+    youtube.src = "https://www.youtube.com/live_chat?is_popout=1&v=7d576UsZFV8";
+    chat.appendChild(youtube);
 }
