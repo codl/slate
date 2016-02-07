@@ -10,15 +10,6 @@ const mpd = require('mpd');
 // be closed automatically when the JavaScript object is garbage collected.
 var mainWindow = null;
 
-// Quit when all windows are closed.
-app.on('window-all-closed', function() {
-    // On OS X it is common for applications and their menu bar
-    // to stay active until the user quits explicitly with Cmd + Q
-    if (process.platform != 'darwin') {
-        app.quit();
-    }
-});
-
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 app.on('ready', function() {
@@ -33,10 +24,8 @@ app.on('ready', function() {
 
     // Emitted when the window is closed.
     mainWindow.on('closed', function() {
-        // Dereference the window object, usually you would store windows
-        // in an array if your app supports multi windows, this is the time
-        // when you should delete the corresponding element.
         mainWindow = null;
+        app.quit();
     });
 
     var web = mainWindow.webContents;
@@ -73,4 +62,12 @@ function extract_mpd_info(str){
         info[tmp[0]] = tmp.slice(1).join(":").trim();
     }
     return info;
+}
+
+function youtube_login(){
+    var login_window = new BrowserWindow({width: 700, height: 700});
+    login_window.setMenu(null);
+    login_window.loadURL("https://accounts.google.com/ServiceLogin?service=youtube");
+    login_window.on("closed", function(){if(mainWindow){mainWindow.webContents.send("youtube-login");}});
+    login_window.webContents.openDevTools();
 }

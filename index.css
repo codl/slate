@@ -80,11 +80,11 @@ body {
     visibility: hidden;
 }
 
-#chat-controls .url {
+#chat-controls .chat-sub {
     display: none;
 }
 
-#chat-controls.youtube .url.youtube,
-#chat-controls.picarto .url.picarto {
+#chat-controls.youtube .chat-sub.youtube,
+#chat-controls.picarto .chat-sub.picarto {
     display: block;
 }
