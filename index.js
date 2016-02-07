@@ -116,6 +116,12 @@ function init(){
     var chat_selector = document.querySelector("#chat-type");
     chat_selector.addEventListener("change", update_chat_form);
 
+    ipc.on('youtube-login-done', make_chat);
+
+    document.querySelector('#youtube-login').addEventListener('click', function(){
+        ipc.send('youtube-login');
+    });
+
     var config = {};
     var config_file;
     if("XDG_CONFIG_HOME" in process.env && process.env["XDG_CONFIG_HOME"] != "")
@@ -155,4 +161,3 @@ function init(){
     document.querySelector("#yt-url").addEventListener("change", save_config);
     document.querySelector("#mpd-toggle").addEventListener("change", save_config);
 }
-

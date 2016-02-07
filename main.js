@@ -51,6 +51,7 @@ app.on('ready', function() {
         });
     }
     client.on('system-player', send_song);
+    electron.ipcMain.on('youtube-login', youtube_login);
 });
 
 function extract_mpd_info(str){
@@ -68,6 +69,6 @@ function youtube_login(){
     var login_window = new BrowserWindow({width: 700, height: 700});
     login_window.setMenu(null);
     login_window.loadURL("https://accounts.google.com/ServiceLogin?service=youtube");
-    login_window.on("closed", function(){if(mainWindow){mainWindow.webContents.send("youtube-login");}});
+    login_window.on("closed", function(){if(mainWindow){mainWindow.webContents.send('youtube-login-done');}});
     login_window.webContents.openDevTools();
 }
