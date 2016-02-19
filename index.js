@@ -97,12 +97,28 @@ function init(){
             wv.src = "https://picarto.tv/chatpopout/"+channel+"/public";
             chat.appendChild(wv);
         }
+        else if(chattype == "hitbox"){
+            var channel = document.querySelector("#hitbox-channel").value;
+            var wv = document.createElement("webview");
+            wv.addEventListener("dom-ready", function(){
+                fs.readFile(__dirname + "/chat_css/hitbox.css", "utf8", function(err, css){
+                    if(err) throw err;
+                    wv.insertCSS(css);
+                });
+                fs.readFile(__dirname + "/chat_js/hitbox.js", "utf8", function(err, js){
+                    if(err) throw err;
+                    wv.executeJavaScript(js);
+                });
+            });
+            wv.src = "http://www.hitbox.tv/embedchat/"+channel+"?autoconnect=true";
+            chat.appendChild(wv);
+        }
     }
 
     var makechatbutton = document.querySelector("#make-chat");
     makechatbutton.addEventListener("click", make_chat);
 
-    const chat_types = [ "youtube", "picarto", "none" ];
+    const chat_types = [ "youtube", "picarto", "hitbox", "none" ];
 
     function update_chat_form(){
         var controls = document.querySelector("#chat-controls");
@@ -145,6 +161,7 @@ function init(){
         config["chat-type"] = document.querySelector("#chat-type").value;
         config["picarto-channel"] = document.querySelector("#picarto-channel").value;
         config["yt-url"] = document.querySelector("#yt-url").value;
+        config["hitbox-channel"] = document.querySelector("#hitbox-channel").value;
         config["mpd-toggle"] = document.querySelector("#mpd-toggle").checked;
         var content = JSON.stringify(config);
         fs.writeFile(config_file, content);
@@ -153,6 +170,6 @@ function init(){
     document.querySelector("#chat-type").addEventListener("change", save_config);
     document.querySelector("#picarto-channel").addEventListener("change", save_config);
     document.querySelector("#yt-url").addEventListener("change", save_config);
+    document.querySelector("#hitbox-channel").addEventListener("change", save_config);
     document.querySelector("#mpd-toggle").addEventListener("change", save_config);
 }
-
