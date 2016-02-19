@@ -1,3 +1,4 @@
+"use strict";
 function init(){
     var fs = require("fs");
     var process = require("process");
@@ -6,7 +7,7 @@ function init(){
     function update_song(_, song){
         var np = document.querySelector(".nowplaying");
         var children = Array.from(np.childNodes);
-        for(child of children){
+        for(let child of children){
             np.removeChild(child);
         }
         np.classList.remove("show");
@@ -55,7 +56,9 @@ function init(){
             window.clearTimeout(hidetimeout);
         }
 
-        hidetimeout = window.setTimeout(function(){ np.classList.remove("show"); }, 10000);
+        let length = parseFloat(document.querySelector("#notification-timeout").value);
+        if(!length || length < 0.1) length = 10;
+        hidetimeout = window.setTimeout(function(){ np.classList.remove("show"); }, Math.floor(length * 1000));
     }
 
     var ipc = require("electron").ipcRenderer;
@@ -64,7 +67,7 @@ function init(){
     function make_chat(){
         var chat = document.querySelector(".chat");
         var children = Array.from(chat.childNodes);
-        for(child of children){
+        for(let child of children){
             chat.removeChild(child);
         }
 
@@ -123,7 +126,7 @@ function init(){
     function update_chat_form(){
         var controls = document.querySelector("#chat-controls");
         var chattype = document.querySelector("#chat-type").value;
-        for(type of chat_types){
+        for(let type of chat_types){
             controls.classList.remove(type);
         }
         controls.classList.add(chattype);
@@ -143,7 +146,7 @@ function init(){
         if(err) return;
         config = JSON.parse(content);
         var keys = Object.keys(config);
-        for(key of keys){
+        for(let key of keys){
             var el = document.querySelector("#" + key);
             if(el){
                 if(el.type == "checkbox"){
@@ -163,6 +166,7 @@ function init(){
         config["yt-url"] = document.querySelector("#yt-url").value;
         config["hitbox-channel"] = document.querySelector("#hitbox-channel").value;
         config["mpd-toggle"] = document.querySelector("#mpd-toggle").checked;
+        config["notification-timeout"] = document.querySelector("#notification-timeout").value;
         var content = JSON.stringify(config);
         fs.writeFile(config_file, content);
     }
@@ -172,4 +176,5 @@ function init(){
     document.querySelector("#yt-url").addEventListener("change", save_config);
     document.querySelector("#hitbox-channel").addEventListener("change", save_config);
     document.querySelector("#mpd-toggle").addEventListener("change", save_config);
+    document.querySelector("#notification-timeout").addEventListener("change", save_config);
 }
