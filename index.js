@@ -55,7 +55,7 @@ function init(){
             window.clearTimeout(hidetimeout);
         }
 
-        hidetimeout = window.setTimeout(function(){ np.classList.remove("show"); }, 5000);
+        hidetimeout = window.setTimeout(function(){ np.classList.remove("show"); }, 10000);
     }
 
     var ipc = require("electron").ipcRenderer;
