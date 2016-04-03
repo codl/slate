@@ -43,7 +43,7 @@ function init(){
             np.appendChild(name);
         }
 
-        if(document.querySelector("#mpd-toggle").checked){
+        if(document.querySelector("#mpd-auto").checked){
             show_now_playing();
         }
     }
@@ -171,7 +171,7 @@ function init(){
         config["picarto-channel"] = document.querySelector("#picarto-channel").value;
         config["yt-url"] = document.querySelector("#yt-url").value;
         config["hitbox-channel"] = document.querySelector("#hitbox-channel").value;
-        config["mpd-toggle"] = document.querySelector("#mpd-toggle").checked;
+        config["mpd-auto"] = document.querySelector("#mpd-auto").checked;
         config["notification-timeout"] = document.querySelector("#notification-timeout").value;
         var content = JSON.stringify(config);
         fs.writeFile(config_file, content);
@@ -181,7 +181,7 @@ function init(){
     document.querySelector("#picarto-channel").addEventListener("change", save_config);
     document.querySelector("#yt-url").addEventListener("change", save_config);
     document.querySelector("#hitbox-channel").addEventListener("change", save_config);
-    document.querySelector("#mpd-toggle").addEventListener("change", save_config);
+    document.querySelector("#mpd-auto").addEventListener("change", save_config);
     document.querySelector("#notification-timeout").addEventListener("change", save_config);
 
 

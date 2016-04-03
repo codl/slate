@@ -13,7 +13,8 @@
         </div>
         <div class="controls">
             <div id="chat-controls">
-                <p>Chat:
+                <h3>Chat</h3>
+                <p>Provider:
                     <select id="chat-type">
                         <option selected value="none">None</option>
                         <option value="youtube">Youtube</option>
@@ -21,30 +22,33 @@
                         <option value="hitbox">Hitbox</option>
                     </select>
                 </p>
-                <p class="chat-sub picarto">Picarto channel name:
+                <p class="chat-sub picarto">Channel name:
                     <input id="picarto-channel" placeholder="codl"/>
                 </p>
-                <p class="chat-sub youtube">Youtube popout chat url:
+                <p class="chat-sub youtube">Popout chat url:
                     <input id="yt-url" placeholder="https://www.youtube.com/live_chat?..."/>
                 </p>
                 <p class="chat-sub youtube">
                     <button id="youtube-login">Login to YouTube</button>
                 </p>
-                <p class="chat-sub hitbox">Hitbox channel name:
+                <p class="chat-sub hitbox">Channel name:
                     <input id="hitbox-channel" placeholder="codl"/>
                 </p>
-                <p><button id="make-chat">Lez go</button></p>
+                <p><button id="make-chat">Update</button></p>
             </div>
             <div>
-                <p><label>
-                    MPD notifications:
-                    <input type=checkbox checked id="mpd-toggle" />
-                </label></p>
+                <h3>MPD notifications</h3>
+                <p>
+                    <label>Auto show+hide on track change:
+                        <input type=checkbox checked id="mpd-auto" />
+                    </label>
+                </p>
                 <p>Notifications last for
-                    <input type="text" id="notification-timeout" value="10" placeholder="10">
+                    <input type="number" id="notification-timeout" value="10" placeholder="10">
                 seconds</p>
             </div>
-            <div>
+            <div class="meta">
+                <h3>Meta</h3>
                 <p>
                     <button id="reload">Reload</button>
                     <button id="inspect">Inspect</button>
