@@ -21,11 +21,7 @@ app.on('ready', function() {
     });
     mainWindow.setMenu(null);
 
-    // and load the index.html of the app.
     mainWindow.loadURL('file://' + __dirname + '/index.html');
-    //mainWindow.loadURL('chrome://gpu');
-
-    //mainWindow.webContents.openDevTools({detach: true});
 
     // Emitted when the window is closed.
     mainWindow.on('closed', function() {

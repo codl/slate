@@ -183,4 +183,12 @@ function init(){
     document.querySelector("#hitbox-channel").addEventListener("change", save_config);
     document.querySelector("#mpd-toggle").addEventListener("change", save_config);
     document.querySelector("#notification-timeout").addEventListener("change", save_config);
+
+
+    document.querySelector("#reload").addEventListener("click", function reload(){
+        location.reload();
+    });
+    document.querySelector("#inspect").addEventListener("click", function inspect(){
+        require("remote").getCurrentWebContents().openDevTools({detach: true});
+    });
 }
