@@ -33,7 +33,11 @@ app.on('ready', function() {
     });
 
     var previous_song = "";
-    function send_song(){
+    function send_song(quiet){
+        if(!mpd_ready){
+            client.on("ready", send_song, quiet);
+            return;
+        }
         client.sendCommand("currentsong", function(err, msg){
             if (err) throw err;
             var song = extract_mpd_info(msg);
@@ -44,13 +48,19 @@ app.on('ready', function() {
             // if listening to a stream and the song info changes
 
             if(previous_song != hash) {
-                web.send("mpd", song);
+                web.send("mpd", song, quiet);
                 previous_song = hash;
             }
         });
     }
+
+    var mpd_ready = false;
+
     client.on('system-player', send_song);
+    client.on('ready', function(){ mpd_ready = true; });
+
     electron.ipcMain.on('youtube-login', youtube_login);
+    electron.ipcMain.on('ready', function(){ send_song(true); });
 });
 
 function extract_mpd_info(str){

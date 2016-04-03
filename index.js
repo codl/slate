@@ -4,7 +4,7 @@ function init(){
     var process = require("process");
 
     var hidetimeout;
-    function update_song(_, song){
+    function update_song(_, song, quiet){
         var np = document.querySelector(".nowplaying");
         var children = Array.from(np.childNodes);
         for(let child of children){
@@ -43,7 +43,7 @@ function init(){
             np.appendChild(name);
         }
 
-        if(document.querySelector("#mpd-auto").checked){
+        if(document.querySelector("#mpd-auto").checked && !quiet){
             showhide_now_playing();
         }
     }
@@ -179,6 +179,7 @@ function init(){
         }
         update_chat_form();
         make_chat();
+        ipc.send('ready');
     });
 
     function save_config(){
