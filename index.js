@@ -44,13 +44,12 @@ function init(){
         }
 
         if(document.querySelector("#mpd-auto").checked){
-            show_now_playing();
+            showhide_now_playing();
         }
     }
 
-    function show_now_playing(){
-        var np = document.querySelector(".nowplaying");
-        window.setTimeout(function(){ np.classList.add("show"); }, 100);
+    function showhide_now_playing(){
+        show_now_playing();
 
         if(hidetimeout){
             window.clearTimeout(hidetimeout);
@@ -58,8 +57,24 @@ function init(){
 
         let length = parseFloat(document.querySelector("#notification-timeout").value);
         if(!length || length < 0.1) length = 10;
-        hidetimeout = window.setTimeout(function(){ np.classList.remove("show"); }, Math.floor(length * 1000));
+        hidetimeout = window.setTimeout(hide_now_playing, Math.floor(length * 1000));
     }
+
+    function show_now_playing(){
+        document.querySelector(".nowplaying").classList.add("show");
+    }
+
+
+    function hide_now_playing(){
+        if(hidetimeout){
+            window.clearTimeout(hidetimeout);
+        }
+        document.querySelector(".nowplaying").classList.remove("show");
+    }
+
+    document.querySelector("#mpd-show").addEventListener("click", show_now_playing);
+    document.querySelector("#mpd-hide").addEventListener("click", hide_now_playing);
+    document.querySelector("#mpd-showhide").addEventListener("click", showhide_now_playing);
 
     var ipc = require("electron").ipcRenderer;
     ipc.on("mpd", update_song);
