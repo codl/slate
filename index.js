@@ -44,6 +44,8 @@ function init(){
         }
 
         if(document.querySelector("#mpd-auto").checked && !quiet){
+            // force layout, otherwise the show transition never plays
+            np.offsetTop;
             showhide_now_playing();
         }
     }
@@ -51,25 +53,26 @@ function init(){
     function showhide_now_playing(){
         show_now_playing();
 
-        if(hidetimeout){
-            window.clearTimeout(hidetimeout);
-        }
-
         let length = parseFloat(document.querySelector("#notification-timeout").value);
         if(!length || length < 0.1) length = 10;
         hidetimeout = window.setTimeout(hide_now_playing, Math.floor(length * 1000));
     }
 
     function show_now_playing(){
-        document.querySelector(".nowplaying").classList.add("show");
+        if(hidetimeout){
+            window.clearTimeout(hidetimeout);
+            hidetimeout = 0;
+        }
+        window.requestAnimationFrame(function(){
+            document.querySelector(".nowplaying").classList.add("show")
+        });
     }
 
 
     function hide_now_playing(){
-        if(hidetimeout){
-            window.clearTimeout(hidetimeout);
-        }
-        document.querySelector(".nowplaying").classList.remove("show");
+        window.requestAnimationFrame(function(){
+            document.querySelector(".nowplaying").classList.remove("show")
+        });
     }
 
     document.querySelector("#mpd-show").addEventListener("click", show_now_playing);

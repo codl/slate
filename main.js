@@ -47,10 +47,10 @@ app.on('ready', function() {
             // this ensures that the notification will show
             // if listening to a stream and the song info changes
 
-            if(previous_song != hash) {
-                web.send("mpd", song, quiet);
-                previous_song = hash;
-            }
+            quiet = quiet || previous_song == hash;
+            web.send("mpd", song, quiet);
+
+            previous_song = hash;
         });
     }
 
