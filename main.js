@@ -71,6 +71,10 @@ function youtube_login(){
     var login_window = new BrowserWindow({width: 700, height: 700});
     login_window.setMenu(null);
     login_window.loadURL("https://accounts.google.com/ServiceLogin?service=youtube");
-    login_window.on("closed", function(){if(mainWindow){mainWindow.webContents.send('youtube-login-done');}});
+    login_window.on("closed", function(){
+        if(mainWindow){
+            mainWindow.webContents.send('youtube-login-done');
+        }
+    });
     login_window.webContents.openDevTools();
 }

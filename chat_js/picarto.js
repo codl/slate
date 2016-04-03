@@ -1,3 +1,4 @@
+"use strict";
 (function(){
     function prepare_chat(){
         document.querySelector("#mainContainer").style.top = 0;
