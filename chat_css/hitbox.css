@@ -48,7 +48,7 @@ html  .chat-fadeout {
 }
 
 html .chat-messages.compact li {
-    background: rgba(0,0,0,0.6);
+    background: black;
     border: none;
     padding: .5em .7em .6em;
 }

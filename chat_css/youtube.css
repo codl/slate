@@ -32,7 +32,7 @@ html .live-chat-widget .comment:nth-of-type(1){
 
 html .live-chat-widget .comment:nth-of-type(n),
 html .live-chat-widget.dark .comment:nth-of-type(n){
-    background: rgba(0,0,0,0.6);
+    background: black;
     animation: hidecomment .6s 8s 1 forwards;
     will-change: transform;
 }

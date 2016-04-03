@@ -1,6 +1,7 @@
 body {
     margin: 0;
     font-family: "Liberation Sans";
+    background: white;
 }
 
 .controls {
@@ -21,6 +22,7 @@ body {
 }
 
 .scene {
+    -webkit-app-region: drag;
     font-size: 1.5em;
     width: 1280px;
     height: 720px;
@@ -38,7 +40,7 @@ body {
 
 .nowplaying p {
     margin: 0 0;
-    background: rgba(0,0,0,0.6);
+    background: black;
     color: white;
     padding: .6em;
     padding-left: .4em;
