@@ -61,7 +61,7 @@ html .msgContentIdentifier {
 
 html .messageli,
 html .messageli:nth-child(odd) {
-    background: rgba(0,0,0,0.6);
+    background: black;
     border: none;
     padding: .4em .4em .6em;
 }

@@ -18,6 +18,7 @@
                         <option selected value="none">None</option>
                         <option value="youtube">Youtube</option>
                         <option value="picarto">Picarto</option>
+                        <option value="hitbox">Hitbox</option>
                     </select>
                 </p>
                 <p class="chat-sub picarto">Picarto channel name:
@@ -29,6 +30,8 @@
                 <p class="chat-sub youtube">
                     <button id="youtube-login">Login to YouTube</button>
                 </p>
+                <p class="chat-sub hitbox">Hitbox channel name:
+                    <input id="hitbox-channel" placeholder="codl"/>
                 </p>
                 <p><button id="make-chat">Lez go</button></p>
             </div>
@@ -37,6 +40,9 @@
                     MPD notifications:
                     <input type=checkbox checked id="mpd-toggle" />
                 </label></p>
+                <p>Notifications last for
+                    <input type="text" id="notification-timeout" value="10" placeholder="10">
+                seconds</p>
             </div>
         </div>
     </body>
