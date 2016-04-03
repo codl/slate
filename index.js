@@ -6,11 +6,18 @@ function init(){
     var hidetimeout;
     function update_song(_, song, quiet){
         var np = document.querySelector(".nowplaying");
+
+        quiet = quiet || !document.querySelector("#mpd-auto").checked;
+
+        if(!quiet){
+            np.classList.remove("show");
+        }
+
         var children = Array.from(np.childNodes);
         for(let child of children){
             np.removeChild(child);
         }
-        np.classList.remove("show");
+
         if("Artist" in song){
             var artist = document.createElement("p");
             artist.appendChild(document.createTextNode(song.Artist));
@@ -43,8 +50,9 @@ function init(){
             np.appendChild(name);
         }
 
-        if(document.querySelector("#mpd-auto").checked && !quiet){
-            // force layout, otherwise the show transition never plays
+        if(!quiet){
+            // force layout, otherwise the show class and the elements are added
+            // in the same layout and the transition never plays
             np.offsetTop;
             showhide_now_playing();
         }
