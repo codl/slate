@@ -78,6 +78,12 @@ body {
     width: 160px;
 }
 
+.chat webview {
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+}
+
 .chat webview.hidden {
     visibility: hidden;
 }
