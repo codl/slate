@@ -17,7 +17,8 @@ app.on('ready', function() {
     mainWindow = new BrowserWindow({
         width: 1280,
         height: 850,
-        frame: false
+        frame: false,
+        resizable: false
     });
     mainWindow.setMenu(null);
 

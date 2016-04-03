@@ -5,8 +5,7 @@ body {
 }
 
 .controls {
-    position: absolute;
-    top: 725px;
+    max-height: 130px;
     display: flex;
     width: 100%;
     flex-direction: row;
@@ -15,6 +14,7 @@ body {
 .controls > div {
     margin: 1em;
     flex: 1;
+    overflow: auto;
 }
 
 .controls p {
