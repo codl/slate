@@ -119,7 +119,7 @@ body {
 }
 
 
-.chat .name, .chat .contents {
+.chat .name, .chat .content {
     display: inline-block;
 }
 
@@ -127,7 +127,7 @@ body {
     padding-right: .8em;
 }
 
-.message .contents {
+.message .content {
     font-weight: bold;
 }
 
@@ -145,7 +145,8 @@ body {
 
 #chat-controls.youtube .chat-sub.youtube,
 #chat-controls.hitbox  .chat-sub.hitbox,
-#chat-controls.picarto .chat-sub.picarto {
+#chat-controls.picarto .chat-sub.picarto,
+#chat-controls.demo .chat-sub.demo {
     display: block;
 }
 

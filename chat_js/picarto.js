@@ -18,11 +18,11 @@
             let els = Array.from(mut.addedNodes);
             for(let el of els){
                 let msg = {
-                    type: null, name: null, message: null, badge: null, avatar: null
+                    type: null, name: null, content: null, badge: null, avatar: null
                 };
                 var update_el = el.querySelector("span.update");
                 if(update_el){
-                    msg.message = update_el.textContent;
+                    msg.content = update_el.textContent;
                     msg.type = "status";
                 }
                 else{
@@ -41,7 +41,7 @@
                     for(let icon of icons){
                         content_el.removeChild(icon);
                     }
-                    msg.message = content_el.innerHTML;
+                    msg.content = content_el.innerHTML;
 
                     if(el.querySelector(".stricon")){
                         msg.badge = "streamer";

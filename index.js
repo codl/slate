@@ -113,23 +113,24 @@ function init(){
             name_el.appendChild(document.createTextNode(msg.name));
             line.appendChild(name_el);
         }
-        if(msg.message){
+        if(msg.content){
             let message_el = document.createElement("span");
-            message_el.classList.add("contents");
-            message_el.innerHTML = msg.message;
+            message_el.classList.add("content");
+            message_el.innerHTML = msg.content;
             line.appendChild(message_el);
         }
         chat.appendChild(line);
     }
 
-    function make_chat(){
-        var container = document.querySelector("#chat-webviews");
-        var children = Array.from(container.childNodes);
-        for(let child of children){
-            container.removeChild(child);
-        }
+    function noop(){};
 
+    var teardown_chat = noop;
+    function make_chat(){
+        teardown_chat(); teardown_chat = noop;
+
+        var container = document.querySelector("#chat-webviews");
         var chattype = document.querySelector("#chat-type").value;
+
         if(chattype == "picarto"){
             var channel = document.querySelector("#picarto-channel").value;
             var wv = document.createElement("webview");
@@ -147,13 +148,45 @@ function init(){
                 }
             });
             container.appendChild(wv);
+            teardown_chat = function teardown_picarto(){
+                container.removeChild(wv);
+            };
+        }
+        else if(chattype == "demo"){
+            fs.readFile(__dirname + "/assets/bee.txt", "utf8", function(err, content){
+                if(err){
+                    console.error(err);
+                    return;
+                }
+                var lines = content.split("\n\n");
+                var timeout;
+                function send_demo_line(){
+                    var line = lines.shift();
+                    var msg = {
+                        name: "Jerry Seinfeld",
+                        content: line,
+                        badge: Math.random() > 0.7? "streamer" : null,
+                        type: "message"
+                    }
+                    chat_message(msg);
+                    lines.push(line);
+                    timeout = window.setTimeout(send_demo_line,
+                        Math.floor(Math.random() * 9 * 1000));
+                }
+
+                send_demo_line();
+
+                teardown_chat = function teardown_demo_chat(){
+                    clearTimeout(timeout);
+                };
+            });
         }
     }
 
     var makechatbutton = document.querySelector("#make-chat");
     makechatbutton.addEventListener("click", make_chat);
 
-    const chat_types = [ "youtube", "picarto", "hitbox", "none" ];
+    const chat_types = [ "youtube", "picarto", "hitbox", "demo", "none" ];
 
     function update_chat_form(){
         var controls = document.querySelector("#chat-controls");
