@@ -27,41 +27,42 @@ app.on('ready', function() {
 
     var web = mainWindow.webContents;
 
-    var client = mpd.connect({
-        port: 6600,
-        host: 'localhost',
-    });
-
-    var previous_song = "";
-    function send_song(quiet){
-        if(!mpd_ready){
-            client.on("ready", send_song, quiet);
-            return;
-        }
-        client.sendCommand("currentsong", function(err, msg){
-            if (err) throw err;
-            var song = extract_mpd_info(msg);
-
-            var hash = song.file;
-            if("Title" in song) hash += song.Title;
-            // this ensures that the notification will show
-            // if listening to a stream and the song info changes
-
-            if(previous_song != hash){
-                web.send("mpd", song, quiet);
-            }
-
-            previous_song = hash;
-        });
-    }
-
     var mpd_ready = false;
 
-    client.on('system-player', send_song);
-    client.on('ready', function(){ mpd_ready = true; });
+    var mpd_client;
+
+    function mpd_init(){
+        mpd_client = mpd.connect({
+            port: 6600,
+            host: 'localhost',
+        });
+
+        mpd_client.on('ready', function(){
+            function send_song(quiet){
+                mpd_client.sendCommand("currentsong", function(err, msg){
+                    if (err) throw err;
+                    var song = extract_mpd_info(msg);
+                    web.send("mpd", song, quiet);
+                });
+            }
+            mpd_client.on('system-player', send_song);
+            electron.ipcMain.removeAllListeners('send-song');
+            electron.ipcMain.on('send-song', function(_, quiet){ send_song(quiet); });
+            send_song(true);
+            mpd_client.ready = true;
+        });
+        mpd_client.on('end', mpd_teardown);
+        mpd_client.on('error', console.log);
+    }
+
+    function mpd_teardown(){
+        electron.ipcMain.removeAllListeners('send-song');
+        setTimeout(mpd_init, 1000);
+    }
+
+    mpd_init();
 
     electron.ipcMain.on('youtube-login', youtube_login);
-    electron.ipcMain.on('ready', function(){ send_song(true); });
 });
 
 function extract_mpd_info(str){

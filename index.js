@@ -4,7 +4,20 @@ function init(){
     var process = require("process");
 
     var hidetimeout;
+    var previous_song;
     function update_song(_, song, quiet){
+        console.log("update");
+
+        var hash = song.file;
+        if("Title" in song) hash += song.Title;
+        // this ensures that the notification will show
+        // if listening to a stream and the song info changes
+
+        if(previous_song == hash){
+            return;
+        }
+        previous_song = hash;
+
         var np = document.querySelector(".nowplaying");
 
         quiet = quiet || !document.querySelector("#mpd-auto").checked;
@@ -190,7 +203,7 @@ function init(){
         }
         update_chat_form();
         make_chat();
-        ipc.send('ready');
+        ipc.send('send-song', true);
     });
 
     function save_config(){
