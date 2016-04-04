@@ -103,6 +103,23 @@ function init(){
 
     function chat_message(msg){
         console.log(msg);
+        var chat = document.querySelector(".chat ul");
+        var line = document.createElement("li");
+        if(msg.badge) line.classList.add(msg.badge);
+        if(msg.type) line.classList.add(msg.type);
+        if(msg.name){
+            let name_el = document.createElement("span");
+            name_el.classList.add("name");
+            name_el.appendChild(document.createTextNode(msg.name));
+            line.appendChild(name_el);
+        }
+        if(msg.message){
+            let message_el = document.createElement("span");
+            message_el.classList.add("contents");
+            message_el.innerHTML = msg.message;
+            line.appendChild(message_el);
+        }
+        chat.appendChild(line);
     }
 
     function make_chat(){
@@ -208,6 +225,6 @@ function init(){
         require("remote").getCurrentWebContents().openDevTools({detach: true});
     });
     document.querySelector("#inspect-chat").addEventListener("click", function inspect(){
-        document.querySelector(".chat webview").openDevTools();
+        document.querySelector("#chat-webviews webview").openDevTools();
     });
 }
