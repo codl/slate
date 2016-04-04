@@ -152,6 +152,27 @@ function init(){
                 container.removeChild(wv);
             };
         }
+        else if(chattype == "hitbox"){
+            var channel = document.querySelector("#hitbox-channel").value;
+            var wv = document.createElement("webview");
+            wv.preload = __dirname + "/wv_ipc.js";
+            wv.addEventListener("dom-ready", function(){
+                fs.readFile(__dirname + "/chat_js/hitbox.js", "utf8", function(err, js){
+                    if(err) throw err;
+                    wv.executeJavaScript(js);
+                });
+            });
+            wv.src = "http://www.hitbox.tv/embedchat/"+channel+"?autoconnect=true";
+            wv.addEventListener("ipc-message", function(e){
+                if(e.channel == "chat"){
+                    chat_message(e.args[0]);
+                }
+            });
+            container.appendChild(wv);
+            teardown_chat = function teardown_hitbox(){
+                container.removeChild(wv);
+            };
+        }
         else if(chattype == "demo"){
             fs.readFile(__dirname + "/assets/bee.txt", "utf8", function(err, content){
                 if(err){

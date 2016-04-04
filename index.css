@@ -40,7 +40,7 @@ body {
 }
 
 .scene {
-    -webkit-app-region: drag;
+    /* -webkit-app-region: drag; */
     width: 1280px;
     height: 720px;
     background: magenta;
@@ -104,6 +104,7 @@ body {
     bottom: 0;
     margin: 0;
     padding: 0;
+    width: 100%;
 }
 
 .chat li {
@@ -133,6 +134,20 @@ body {
 
 .message.streamer {
     border-left: 3px solid #F11D58;
+}
+
+.message img.smiley, .message img.emoti {
+    max-height: 1.75em;
+}
+
+.message img {
+    max-width: 100%;
+}
+
+.message iframe {
+    transform: scale(0.5);
+    transform-origin: top left;
+    margin-bottom: -50%;
 }
 
 @keyframes hide-chat-line {
