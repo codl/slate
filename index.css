@@ -96,16 +96,6 @@ body {
     width: 160px;
 }
 
-.chat webview {
-    overflow: hidden;
-    height: 100%;
-    width: 100%;
-}
-
-.chat webview.hidden {
-    visibility: hidden;
-}
-
 #chat-controls .chat-sub {
     display: none;
 }
@@ -114,4 +104,15 @@ body {
 #chat-controls.hitbox  .chat-sub.hitbox,
 #chat-controls.picarto .chat-sub.picarto {
     display: block;
+}
+
+#chat-webviews {
+    height: 0;
+    width: 0;
+    overflow: hidden;
+}
+
+#chat-webviews webview {
+    width: 300px;
+    height: 300px;
 }

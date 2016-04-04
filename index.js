@@ -6,8 +6,6 @@ function init(){
     var hidetimeout;
     var previous_song;
     function update_song(_, song, quiet){
-        console.log("update");
-
         var hash = song.file;
         if("Title" in song) hash += song.Title;
         // this ensures that the notification will show
@@ -103,57 +101,35 @@ function init(){
     var ipc = require("electron").ipcRenderer;
     ipc.on("mpd", update_song);
 
+    function chat_message(msg){
+        console.log(msg);
+    }
+
     function make_chat(){
-        var chat = document.querySelector(".chat");
-        var children = Array.from(chat.childNodes);
+        var container = document.querySelector("#chat-webviews");
+        var children = Array.from(container.childNodes);
         for(let child of children){
-            chat.removeChild(child);
+            container.removeChild(child);
         }
 
         var chattype = document.querySelector("#chat-type").value;
-        if(chattype == "youtube"){
-            var url = document.querySelector("#yt-url").value;
-            var wv = document.createElement("webview");
-            wv.addEventListener("dom-ready", function(){
-                fs.readFile(__dirname + "/chat_css/youtube.css", "utf8", function(err, css){
-                    if(err) throw err;
-                    wv.insertCSS(css);
-                });
-            });
-            wv.src = url;
-            chat.appendChild(wv);
-        }
-        else if(chattype == "picarto"){
+        if(chattype == "picarto"){
             var channel = document.querySelector("#picarto-channel").value;
             var wv = document.createElement("webview");
+            wv.preload = __dirname + "/wv_ipc.js";
             wv.addEventListener("dom-ready", function(){
-                fs.readFile(__dirname + "/chat_css/picarto.css", "utf8", function(err, css){
-                    if(err) throw err;
-                    wv.insertCSS(css);
-                });
                 fs.readFile(__dirname + "/chat_js/picarto.js", "utf8", function(err, js){
                     if(err) throw err;
                     wv.executeJavaScript(js);
                 });
             });
             wv.src = "https://picarto.tv/chatpopout/"+channel+"/public";
-            chat.appendChild(wv);
-        }
-        else if(chattype == "hitbox"){
-            var channel = document.querySelector("#hitbox-channel").value;
-            var wv = document.createElement("webview");
-            wv.addEventListener("dom-ready", function(){
-                fs.readFile(__dirname + "/chat_css/hitbox.css", "utf8", function(err, css){
-                    if(err) throw err;
-                    wv.insertCSS(css);
-                });
-                fs.readFile(__dirname + "/chat_js/hitbox.js", "utf8", function(err, js){
-                    if(err) throw err;
-                    wv.executeJavaScript(js);
-                });
+            wv.addEventListener("ipc-message", function(e){
+                if(e.channel == "chat"){
+                    chat_message(e.args[0]);
+                }
             });
-            wv.src = "http://www.hitbox.tv/embedchat/"+channel+"?autoconnect=true";
-            chat.appendChild(wv);
+            container.appendChild(wv);
         }
     }
 
@@ -230,5 +206,8 @@ function init(){
     });
     document.querySelector("#inspect").addEventListener("click", function inspect(){
         require("remote").getCurrentWebContents().openDevTools({detach: true});
+    });
+    document.querySelector("#inspect-chat").addEventListener("click", function inspect(){
+        document.querySelector(".chat webview").openDevTools();
     });
 }
