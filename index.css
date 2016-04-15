@@ -161,6 +161,7 @@ body {
 #chat-controls.youtube .chat-sub.youtube,
 #chat-controls.hitbox  .chat-sub.hitbox,
 #chat-controls.picarto .chat-sub.picarto,
+#chat-controls.twitch .chat-sub.twitch,
 #chat-controls.demo .chat-sub.demo {
     display: block;
 }

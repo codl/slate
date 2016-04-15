@@ -190,7 +190,28 @@ function init(){
                 }
             });
             container.appendChild(wv);
-            teardown_chat = function teardown_hitbox(){
+            teardown_chat = function teardown_youtube(){
+                container.removeChild(wv);
+            };
+        }
+        else if(chattype == "twitch"){
+            var channel = document.querySelector("#twitch-channel").value;
+            var wv = document.createElement("webview");
+            wv.preload = __dirname + "/wv_ipc.js";
+            wv.addEventListener("dom-ready", function(){
+                fs.readFile(__dirname + "/chat_js/twitch.js", "utf8", function(err, js){
+                    if(err) throw err;
+                    wv.executeJavaScript(js);
+                });
+            });
+            wv.src = "http://www.twitch.tv/"+channel+"/chat";
+            wv.addEventListener("ipc-message", function(e){
+                if(e.channel == "chat"){
+                    chat_message(e.args[0]);
+                }
+            });
+            container.appendChild(wv);
+            teardown_chat = function teardown_twitch(){
                 container.removeChild(wv);
             };
         }
@@ -228,7 +249,7 @@ function init(){
     var makechatbutton = document.querySelector("#make-chat");
     makechatbutton.addEventListener("click", make_chat);
 
-    const chat_types = [ "youtube", "picarto", "hitbox", "demo", "none" ];
+    const chat_types = [ "youtube", "picarto", "hitbox", "demo", "twitch", "none" ];
 
     function update_chat_form(){
         var controls = document.querySelector("#chat-controls");
@@ -279,6 +300,7 @@ function init(){
         config["picarto-channel"] = document.querySelector("#picarto-channel").value;
         config["yt-url"] = document.querySelector("#yt-url").value;
         config["hitbox-channel"] = document.querySelector("#hitbox-channel").value;
+        config["twitch-channel"] = document.querySelector("#twitch-channel").value;
         config["mpd-auto"] = document.querySelector("#mpd-auto").checked;
         config["notification-timeout"] = document.querySelector("#notification-timeout").value;
         var content = JSON.stringify(config);
@@ -289,6 +311,7 @@ function init(){
     document.querySelector("#picarto-channel").addEventListener("change", save_config);
     document.querySelector("#yt-url").addEventListener("change", save_config);
     document.querySelector("#hitbox-channel").addEventListener("change", save_config);
+    document.querySelector("#twitch-channel").addEventListener("change", save_config);
     document.querySelector("#mpd-auto").addEventListener("change", save_config);
     document.querySelector("#notification-timeout").addEventListener("change", save_config);
 
