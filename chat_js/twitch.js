@@ -22,10 +22,9 @@
                 }
                 else {
                     msg.type = "message";
+                    let name_el = el.querySelector(".from");
+                    msg.name = name_el.textContent;
                 }
-
-                let name_el = el.querySelector(".from");
-                msg.name = name_el.textContent;
 
                 let content_el = el.querySelector(".message");
                 msg.content = content_el.innerHTML;
