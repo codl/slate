@@ -173,6 +173,27 @@ function init(){
                 container.removeChild(wv);
             };
         }
+        else if(chattype == "youtube"){
+            var url = document.querySelector("#yt-url").value;
+            var wv = document.createElement("webview");
+            wv.preload = __dirname + "/wv_ipc.js";
+            wv.addEventListener("dom-ready", function(){
+                fs.readFile(__dirname + "/chat_js/youtube.js", "utf8", function(err, js){
+                    if(err) throw err;
+                    wv.executeJavaScript(js);
+                });
+            });
+            wv.src = url;
+            wv.addEventListener("ipc-message", function(e){
+                if(e.channel == "chat"){
+                    chat_message(e.args[0]);
+                }
+            });
+            container.appendChild(wv);
+            teardown_chat = function teardown_hitbox(){
+                container.removeChild(wv);
+            };
+        }
         else if(chattype == "demo"){
             fs.readFile(__dirname + "/assets/bee.txt", "utf8", function(err, content){
                 if(err){
