@@ -40,8 +40,7 @@ body {
 }
 
 .scene {
-    -webkit-app-region: drag;
-    font-size: 1.5em;
+    /* -webkit-app-region: drag; */
     width: 1280px;
     height: 720px;
     background: magenta;
@@ -49,6 +48,7 @@ body {
 }
 
 .nowplaying {
+    font-size: 1.5em;
     position: absolute;
     bottom: 3em; left: 0;
     display: flex;
@@ -94,16 +94,64 @@ body {
     right: 0;
     height: 720px;
     width: 160px;
+    overflow: hidden;
+    font-family: roboto;
+    font-size: 14px;
 }
 
-.chat webview {
-    overflow: hidden;
-    height: 100%;
+.chat ul {
+    position: absolute;
+    bottom: 0;
+    margin: 0;
+    padding: 0;
     width: 100%;
 }
 
-.chat webview.hidden {
-    visibility: hidden;
+.chat li {
+    background: black;
+    padding: .6em 1em;
+    list-style: none;
+    animation: hide-chat-line .6s 40s 1 forwards;
+}
+
+.chat li.status {
+    color: #aaa;
+    font-size: .8em;
+}
+
+
+.chat .name, .chat .content {
+    display: inline-block;
+}
+
+.chat .name {
+    padding-right: .8em;
+}
+
+.message .content {
+    font-weight: bold;
+}
+
+.message.streamer {
+    border-left: 3px solid #F11D58;
+}
+
+.message img.smiley, .message img.emoti {
+    max-height: 1.75em;
+}
+
+.message img {
+    max-width: 100%;
+}
+
+.message iframe {
+    transform: scale(0.5);
+    transform-origin: top left;
+    margin-bottom: -50%;
+}
+
+@keyframes hide-chat-line {
+    to { transform: translateX(100%); }
 }
 
 #chat-controls .chat-sub {
@@ -112,6 +160,18 @@ body {
 
 #chat-controls.youtube .chat-sub.youtube,
 #chat-controls.hitbox  .chat-sub.hitbox,
-#chat-controls.picarto .chat-sub.picarto {
+#chat-controls.picarto .chat-sub.picarto,
+#chat-controls.demo .chat-sub.demo {
     display: block;
+}
+
+#chat-webviews {
+    height: 0;
+    width: 0;
+    overflow: hidden;
+}
+
+#chat-webviews webview {
+    width: 300px;
+    height: 300px;
 }

@@ -10,6 +10,7 @@
             <div class="nowplaying">
             </div>
             <div class="chat">
+                <ul></ul>
             </div>
         </div>
         <div class="controls">
@@ -21,6 +22,7 @@
                         <option value="youtube">Youtube</option>
                         <option value="picarto">Picarto</option>
                         <option value="hitbox">Hitbox</option>
+                        <option value="demo">Demo mode</option>
                     </select>
                 </p>
                 <p class="chat-sub picarto">Channel name:
@@ -34,6 +36,10 @@
                 </p>
                 <p class="chat-sub hitbox">Channel name:
                     <input id="hitbox-channel" placeholder="codl"/>
+                </p>
+                <p class="chat-sub demo">
+                    This provider posts messages at random intervals
+                    and does not have any settings.
                 </p>
                 <p><button id="make-chat">Update</button></p>
             </div>
@@ -58,8 +64,10 @@
                 <p>
                     <button id="reload">Reload</button>
                     <button id="inspect">Inspect</button>
+                    <button id="inspect-chat">Inspect chat webview</button>
                 </p>
             </div>
         </div>
+        <div id="chat-webviews"></div>
     </body>
 </html>
