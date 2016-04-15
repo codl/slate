@@ -27,6 +27,10 @@
                 }
 
                 let content_el = el.querySelector(".message");
+                let imgs = Array.from(content_el.querySelectorAll("img"));
+                for(let img of imgs){
+                    img.src = img.src; // resolve protocol
+                }
                 msg.content = content_el.innerHTML;
 
                 if(el.querySelector(".badge .broadcaster")){
