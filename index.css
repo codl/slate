@@ -6,7 +6,7 @@ body {
 }
 
 .controls {
-    max-height: 130px;
+    max-height: 180px;
     display: flex;
     width: 100%;
     flex-direction: row;
@@ -175,4 +175,34 @@ body {
 #chat-webviews webview {
     width: 300px;
     height: 300px;
+}
+
+
+.controls indicator {
+    float: left;
+    display: block;
+    border: 4px solid transparent;
+    border-radius: 100%;
+    margin: .35em;
+}
+
+.controls indicator.stopped {
+    border-color: gray;
+}
+
+.controls indicator.starting {
+    border-left-color: rgb(242, 209, 68);
+    animation: spinner 1s ease-out infinite;
+}
+
+.controls indicator.ready {
+    border-color: rgb(137, 208, 87);
+}
+
+.controls indicator.error {
+    border-color: #F11D58;
+}
+
+@keyframes spinner {
+    to { transform: rotate(1080deg); }
 }

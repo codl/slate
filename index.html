@@ -15,6 +15,7 @@
         </div>
         <div class="controls">
             <div id="chat-controls">
+                <indicator class="stopped"></indicator>
                 <h3>Chat</h3>
                 <p>Provider:
                     <select id="chat-type">
@@ -47,8 +48,9 @@
                 </p>
                 <p><button id="make-chat">Update</button></p>
             </div>
-            <div>
+            <div id="mpd-controls">
                 <h3>MPD notifications</h3>
+                <indicator class="error"></indicator>
                 <p>
                     <button id="mpd-show">Show</button>
                     <button id="mpd-hide">Hide</button>
