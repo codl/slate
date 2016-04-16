@@ -317,6 +317,7 @@ function init(){
         update_chat_form();
         make_chat();
         ipc.send('send-song', true);
+        ipc.send('request-mpd-status');
     });
 
     function save_config(){

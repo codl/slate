@@ -27,20 +27,20 @@ app.on('ready', function() {
 
     var web = mainWindow.webContents;
 
-    var mpd_ready = false;
+    var mpd_status = 'stopped';
 
     var mpd_client;
 
     function mpd_init(){
-        send_mpd_status('starting');
-        
+        set_mpd_status('starting');
+
         mpd_client = mpd.connect({
             port: 6600,
             host: 'localhost',
         });
 
         mpd_client.on('ready', function(){
-            send_mpd_status('ready');
+            set_mpd_status('ready');
             function send_song(quiet){
                 mpd_client.sendCommand("currentsong", function(err, msg){
                     if (err) throw err;
@@ -52,11 +52,10 @@ app.on('ready', function() {
             electron.ipcMain.removeAllListeners('send-song');
             electron.ipcMain.on('send-song', function(_, quiet){ send_song(quiet); });
             send_song(true);
-            mpd_client.ready = true;
         });
         mpd_client.on('end', mpd_teardown);
         mpd_client.on('error', function(e){
-            send_mpd_status('error', e.errno);
+            set_mpd_status('error', e.errno);
         });
     }
 
@@ -65,13 +64,17 @@ app.on('ready', function() {
         setTimeout(mpd_init, 1000);
     }
 
-    function send_mpd_status(status, message){
+    function set_mpd_status(status, message){
+        mpd_status = status;
         web.send('mpd-status', status, message);
     }
 
     mpd_init();
 
     electron.ipcMain.on('youtube-login', youtube_login);
+    electron.ipcMain.on('request-mpd-status', function(){
+        web.send('mpd-status', mpd_status);
+    });
 });
 
 function extract_mpd_info(str){
