@@ -1,13 +1,14 @@
 "use strict";
 (function(){
-    function prepare_chat(){
+    function ready(){
         simpleMode = true;
         simpleChat(true, true);
+        ipc.sendToHost('status', 'ready');
     }
 
-    socket.on('connect', prepare_chat);
+    socket.on('connect', ready);
     if(socket.connected){
-        prepare_chat();
+        ready();
     }
 
     var obs = new MutationObserver(relay);

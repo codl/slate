@@ -3,6 +3,8 @@
     var obs = new MutationObserver(relay);
     obs.observe(document.querySelector("ul.chatBody"), {childList: true});
 
+    var sent_ready = false;
+
     function relay(mutations){
         for(let mut of mutations){
             let els = Array.from(mut.addedNodes);
@@ -10,6 +12,12 @@
                 let msg = {
                     type: null, name: null, content: null, badge: null, avatar: null
                 };
+
+                if(!sent_ready){
+                    ipc.sendToHost('status', 'ready');
+                    sent_ready = true;
+                }
+
                 var status_el = el.querySelector(".chat-status-message");
                 if(status_el){
                     msg.type = "status";

@@ -4,6 +4,8 @@
     var obs = new MutationObserver(relay);
     obs.observe(document.querySelector("ul.chat-lines"), {childList: true});
 
+    var sent_ready = false;
+
     function relay(mutations){
         for(let mut of mutations){
             let els = Array.from(mut.addedNodes);
@@ -14,6 +16,11 @@
 
                 if (! el.querySelector) continue;
                 // skip html comments
+
+                if(!sent_ready){
+                    ipc.sendToHost('status', 'ready');
+                    sent_ready = true;
+                }
 
                 el = el.querySelector("li"); // shed ember wrapper
 

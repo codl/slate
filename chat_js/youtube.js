@@ -1,6 +1,12 @@
 "use strict";
 (function(){
 
+    // there's no real way to check if it is ready other than
+    // installing a service worker and listening for a request to /live_comments
+    // so i assume that waiting for domready is enough :/
+
+    ipc.sendToHost('status', 'ready');
+
     var obs = new MutationObserver(relay);
     obs.observe(document.querySelector("ul#all-comments"), {childList: true});
 

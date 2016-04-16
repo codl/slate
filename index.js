@@ -125,8 +125,37 @@ function init(){
     function noop(){};
 
     var teardown_chat = noop;
+    function chat_callback(e){
+        if(e.channel == "chat"){
+            chat_message(e.args[0]);
+        }
+        else if(e.channel == "status"){
+            set_chat_status(e.args[0], e.args[1]);
+        }
+    }
+
+    function set_chat_status(status, message){
+        var indicator = document.querySelector("#chat-controls indicator");
+        indicator.className = status;
+        if(message){
+            indicator.title = message;
+        }
+        else{
+            indicator.title = status;
+        }
+    }
+
     function make_chat(){
         teardown_chat(); teardown_chat = noop;
+
+        set_chat_status("starting");
+
+        function mk_generic_teardown(container, webview){
+            return function teardown_generic(){
+                set_chat_status("stopped");
+                container.removeChild(webview);
+            }
+        }
 
         var container = document.querySelector("#chat-webviews");
         var chattype = document.querySelector("#chat-type").value;
@@ -142,15 +171,9 @@ function init(){
                 });
             });
             wv.src = "https://picarto.tv/chatpopout/"+channel+"/public";
-            wv.addEventListener("ipc-message", function(e){
-                if(e.channel == "chat"){
-                    chat_message(e.args[0]);
-                }
-            });
+            wv.addEventListener("ipc-message", chat_callback);
             container.appendChild(wv);
-            teardown_chat = function teardown_picarto(){
-                container.removeChild(wv);
-            };
+            teardown_chat = mk_generic_teardown(container, wv);
         }
         else if(chattype == "hitbox"){
             var channel = document.querySelector("#hitbox-channel").value;
@@ -163,15 +186,10 @@ function init(){
                 });
             });
             wv.src = "http://www.hitbox.tv/embedchat/"+channel+"?autoconnect=true";
-            wv.addEventListener("ipc-message", function(e){
-                if(e.channel == "chat"){
-                    chat_message(e.args[0]);
-                }
-            });
+
+            wv.addEventListener("ipc-message", chat_callback);
             container.appendChild(wv);
-            teardown_chat = function teardown_hitbox(){
-                container.removeChild(wv);
-            };
+            teardown_chat = mk_generic_teardown(container, wv);
         }
         else if(chattype == "youtube"){
             var url = document.querySelector("#yt-url").value;
@@ -184,15 +202,10 @@ function init(){
                 });
             });
             wv.src = url;
-            wv.addEventListener("ipc-message", function(e){
-                if(e.channel == "chat"){
-                    chat_message(e.args[0]);
-                }
-            });
+
+            wv.addEventListener("ipc-message", chat_callback);
             container.appendChild(wv);
-            teardown_chat = function teardown_youtube(){
-                container.removeChild(wv);
-            };
+            teardown_chat = mk_generic_teardown(container, wv);
         }
         else if(chattype == "twitch"){
             var channel = document.querySelector("#twitch-channel").value;
@@ -205,20 +218,15 @@ function init(){
                 });
             });
             wv.src = "http://www.twitch.tv/"+channel+"/chat";
-            wv.addEventListener("ipc-message", function(e){
-                if(e.channel == "chat"){
-                    chat_message(e.args[0]);
-                }
-            });
+            wv.addEventListener("ipc-message", chat_callback);
             container.appendChild(wv);
-            teardown_chat = function teardown_twitch(){
-                container.removeChild(wv);
-            };
+            teardown_chat = mk_generic_teardown(container, wv);
         }
         else if(chattype == "demo"){
             fs.readFile(__dirname + "/assets/bee.txt", "utf8", function(err, content){
                 if(err){
                     console.error(err);
+                    set_chat_status("error", err);
                     return;
                 }
                 var lines = content.split("\n\n");
@@ -241,8 +249,12 @@ function init(){
 
                 teardown_chat = function teardown_demo_chat(){
                     clearTimeout(timeout);
+                    set_chat_status("stopped");
                 };
             });
+        }
+        else {
+            set_chat_status('stopped');
         }
     }
 
