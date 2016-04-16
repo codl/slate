@@ -122,6 +122,7 @@ body {
 
 .chat .name, .chat .content {
     display: inline-block;
+    margin-top: .2em;
 }
 
 .chat .name {
