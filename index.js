@@ -101,8 +101,19 @@ function init(){
     var ipc = require("electron").ipcRenderer;
     ipc.on("mpd", update_song);
 
+    function set_mpd_status(_, status, message){
+        var indicator = document.querySelector("#mpd-controls indicator");
+        indicator.className = status;
+        if(message){
+            indicator.title = message;
+        }
+        else{
+            indicator.title = status;
+        }
+    }
+    ipc.on("mpd-status", set_mpd_status);
+
     function chat_message(msg){
-        console.log(msg);
         var chat = document.querySelector(".chat ul");
         var line = document.createElement("li");
         if(msg.badge) line.classList.add(msg.badge);
@@ -246,6 +257,7 @@ function init(){
                 }
 
                 send_demo_line();
+                set_chat_status("ready");
 
                 teardown_chat = function teardown_demo_chat(){
                     clearTimeout(timeout);

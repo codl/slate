@@ -32,12 +32,15 @@ app.on('ready', function() {
     var mpd_client;
 
     function mpd_init(){
+        send_mpd_status('starting');
+        
         mpd_client = mpd.connect({
             port: 6600,
             host: 'localhost',
         });
 
         mpd_client.on('ready', function(){
+            send_mpd_status('ready');
             function send_song(quiet){
                 mpd_client.sendCommand("currentsong", function(err, msg){
                     if (err) throw err;
@@ -52,12 +55,18 @@ app.on('ready', function() {
             mpd_client.ready = true;
         });
         mpd_client.on('end', mpd_teardown);
-        mpd_client.on('error', console.log);
+        mpd_client.on('error', function(e){
+            send_mpd_status('error', e.errno);
+        });
     }
 
     function mpd_teardown(){
         electron.ipcMain.removeAllListeners('send-song');
         setTimeout(mpd_init, 1000);
+    }
+
+    function send_mpd_status(status, message){
+        web.send('mpd-status', status, message);
     }
 
     mpd_init();
