@@ -219,7 +219,8 @@ function init(){
             teardown_chat = mk_generic_teardown(container, wv);
         }
         else if(chattype == "twitch"){
-            var channel = document.querySelector("#twitch-channel").value;
+            var channel = config['twitch-channel'];
+            var ffz = config['twitch-ffz'];
             var wv = document.createElement("webview");
             wv.preload = __dirname + "/wv_ipc.js";
             wv.addEventListener("dom-ready", function(){
@@ -227,6 +228,12 @@ function init(){
                     if(err) throw err;
                     wv.executeJavaScript(js);
                 });
+                if(ffz){
+                    fs.readFile(__dirname + "/chat_js/twitch_ffz.js", "utf8", function(err, js){
+                        if(err) throw err;
+                        wv.executeJavaScript(js);
+                    });
+                }
             });
             wv.src = "http://www.twitch.tv/"+channel+"/chat";
             wv.addEventListener("ipc-message", chat_callback);
@@ -326,6 +333,7 @@ function init(){
         config["yt-url"] = document.querySelector("#yt-url").value;
         config["hitbox-channel"] = document.querySelector("#hitbox-channel").value;
         config["twitch-channel"] = document.querySelector("#twitch-channel").value;
+        config["twitch-ffz"] = document.querySelector("#twitch-ffz").checked;
         config["mpd-auto"] = document.querySelector("#mpd-auto").checked;
         config["notification-timeout"] = document.querySelector("#notification-timeout").value;
         var content = JSON.stringify(config);
@@ -337,6 +345,7 @@ function init(){
     document.querySelector("#yt-url").addEventListener("change", save_config);
     document.querySelector("#hitbox-channel").addEventListener("change", save_config);
     document.querySelector("#twitch-channel").addEventListener("change", save_config);
+    document.querySelector("#twitch-ffz").addEventListener("change", save_config);
     document.querySelector("#mpd-auto").addEventListener("change", save_config);
     document.querySelector("#notification-timeout").addEventListener("change", save_config);
 

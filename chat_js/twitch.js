@@ -37,6 +37,7 @@
                 let imgs = Array.from(content_el.querySelectorAll("img"));
                 for(let img of imgs){
                     img.src = img.src; // resolve protocol
+                    img.srcset = img.srcset.replace("//", "https://"); // gross
                 }
                 msg.content = content_el.innerHTML;
 
