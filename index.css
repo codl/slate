@@ -187,20 +187,22 @@ body {
 }
 
 .controls indicator.stopped {
-    border-color: gray;
+    border-color: #555;
 }
 
 .controls indicator.starting {
-    border-left-color: rgb(242, 209, 68);
+    border-left-color: #eee;
     animation: spinner 1s ease-out infinite;
 }
 
 .controls indicator.ready {
-    border-color: rgb(137, 208, 87);
+    border-color: #c5f6ba;
 }
 
 .controls indicator.error {
-    border-color: #F11D58;
+    border-bottom: 8px solid rgb(228, 178, 81);
+    border-top: none;
+    border-radius: 0;
 }
 
 @keyframes spinner {
