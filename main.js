@@ -4,6 +4,7 @@ const electron = require('electron');
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const mpd = require('mpd');
+const fs = require('fs');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -17,8 +18,6 @@ app.on('ready', function() {
         resizable: false
     });
     mainWindow.setMenu(null);
-
-    mainWindow.loadURL('file://' + __dirname + '/index.html');
 
     mainWindow.on('closed', function() {
         mainWindow = null;
@@ -75,6 +74,29 @@ app.on('ready', function() {
     electron.ipcMain.on('request-mpd-status', function(){
         web.send('mpd-status', mpd_status);
     });
+
+    var config_file;
+    if("XDG_CONFIG_HOME" in process.env && process.env["XDG_CONFIG_HOME"] != "")
+        config_file = process.env["XDG_CONFIG_HOME"] + "/slate.json";
+    else
+        config_file = process.env["HOME"] + "/.config/slate.json";
+
+    electron.ipcMain.on('request-config', function(){
+        fs.readFile(config_file, "utf8", function(err, content){
+            var config = {};
+            if(!err){
+                config = JSON.parse(content);
+            }
+            web.send('config', config);
+        });
+    });
+
+    electron.ipcMain.on('save-config', function save_config(_, config){
+        var content = JSON.stringify(config);
+        fs.writeFile(config_file, content);
+    });
+
+    mainWindow.loadURL('file://' + __dirname + '/index.html');
 });
 
 function extract_mpd_info(str){

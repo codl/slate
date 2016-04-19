@@ -301,15 +301,9 @@ function init(){
     });
 
     var config = {};
-    var config_file;
-    if("XDG_CONFIG_HOME" in process.env && process.env["XDG_CONFIG_HOME"] != "")
-        config_file = process.env["XDG_CONFIG_HOME"] + "/slate.json";
-    else
-        config_file = process.env["HOME"] + "/.config/slate.json";
 
-    fs.readFile(config_file, "utf8", function(err, content){
-        if(err) return;
-        config = JSON.parse(content);
+    ipc.on('config', function recv_config(_, _config){
+        config = _config;
         var keys = Object.keys(config);
         for(let key of keys){
             var el = document.querySelector("#" + key);
@@ -327,6 +321,8 @@ function init(){
         ipc.send('request-mpd-status');
     });
 
+    ipc.send('request-config');
+
     function save_config(){
         config["chat-type"] = document.querySelector("#chat-type").value;
         config["picarto-channel"] = document.querySelector("#picarto-channel").value;
@@ -336,8 +332,7 @@ function init(){
         config["twitch-ffz"] = document.querySelector("#twitch-ffz").checked;
         config["mpd-auto"] = document.querySelector("#mpd-auto").checked;
         config["notification-timeout"] = document.querySelector("#notification-timeout").value;
-        var content = JSON.stringify(config);
-        fs.writeFile(config_file, content);
+        ipc.send('save-config', config);
     }
 
     document.querySelector("#chat-type").addEventListener("change", save_config);
