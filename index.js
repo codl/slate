@@ -335,12 +335,7 @@ function init(){
         ipc.send('save-config', config);
     }
 
-    document.querySelector("#chat-type").addEventListener("change", save_config);
-    document.querySelector("#picarto-channel").addEventListener("change", save_config);
-    document.querySelector("#yt-url").addEventListener("change", save_config);
-    document.querySelector("#hitbox-channel").addEventListener("change", save_config);
-    document.querySelector("#twitch-channel").addEventListener("change", save_config);
-    document.querySelector("#twitch-ffz").addEventListener("change", save_config);
+    document.querySelector("#make-chat").addEventListener("click", save_config);
     document.querySelector("#mpd-auto").addEventListener("change", save_config);
     document.querySelector("#notification-timeout").addEventListener("change", save_config);
 
