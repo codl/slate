@@ -17,7 +17,8 @@ app.on('ready', function() {
         width: 1280,
         height: 900,
         frame: false,
-        resizable: false
+        resizable: false,
+        show: false
     });
     mainWindow.setMenu(null);
 
@@ -36,8 +37,8 @@ app.on('ready', function() {
         set_mpd_status('starting');
 
         mpd_client = mpd.connect({
-            port: 6600,
-            host: 'localhost',
+            port: config["mpd-port"] || 6600,
+            host: config["mpd-host"] ||'localhost',
         });
 
         mpd_client.on('ready', function(){
@@ -54,15 +55,28 @@ app.on('ready', function() {
             electron.ipcMain.on('send-song', function(_, quiet){ send_song(quiet); });
             send_song(true);
         });
-        mpd_client.on('end', mpd_teardown);
+        mpd_client.once('end', function(){
+            mpd_teardown();
+            setTimeout(mpd_init, 3000);
+        });
         mpd_client.on('error', function(e){
             set_mpd_status('error', e.errno);
+        });
+
+        electron.ipcMain.once('mpd-reload', function(){
+            mpd_teardown();
+            setTimeout(mpd_init, 1);
         });
     }
 
     function mpd_teardown(){
         electron.ipcMain.removeAllListeners('send-song');
-        setTimeout(mpd_init, 1000);
+        electron.ipcMain.removeAllListeners('mpd-reload');
+        mpd_client.removeAllListeners('system-player');
+        mpd_client.removeAllListeners('end');
+        mpd_client.removeAllListeners('error');
+        mpd_client.socket.destroy();
+        mpd_client = null;
     }
 
     function set_mpd_status(status, message){
@@ -70,26 +84,30 @@ app.on('ready', function() {
         web.send('mpd-status', status, message);
     }
 
-    mpd_init();
-
     electron.ipcMain.on('youtube-login', youtube_login);
     electron.ipcMain.on('request-mpd-status', function(){
         web.send('mpd-status', mpd_status);
     });
 
     var config_file = app.getPath('userData') + "/slate.json";
+    var config = {};
 
-    electron.ipcMain.on('request-config', function(){
-        fs.readFile(config_file, "utf8", function(err, content){
-            var config = {};
-            if(!err){
-                config = JSON.parse(content);
-            }
-            web.send('config', config);
-        });
+    fs.readFile(config_file, "utf8", function(err, content){
+        if(!err){
+            config = JSON.parse(content);
+        }
+
+        mpd_init();
+        mainWindow.loadURL('file://' + __dirname + '/index.html');
+        mainWindow.show();
     });
 
-    electron.ipcMain.on('save-config', function save_config(_, config){
+    electron.ipcMain.on('request-config', function(){
+        web.send('config', config);
+    });
+
+    electron.ipcMain.on('save-config', function save_config(_, _config){
+        config = _config;
         var content = JSON.stringify(config);
         fs.mkdir(path.dirname(config_file), function(err){
             if(err && err.code != 'EEXIST'){
@@ -100,8 +118,6 @@ app.on('ready', function() {
             fs.writeFile(config_file, content);
         });
     });
-
-    mainWindow.loadURL('file://' + __dirname + '/index.html');
 });
 
 function extract_mpd_info(str){

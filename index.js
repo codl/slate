@@ -300,6 +300,11 @@ function init(){
         ipc.send('youtube-login');
     });
 
+    function mpd_reload(){
+        save_config();
+        ipc.send('mpd-reload');
+    }
+
     var config = {};
 
     ipc.on('config', function recv_config(_, _config){
@@ -330,6 +335,8 @@ function init(){
         config["hitbox-channel"] = document.querySelector("#hitbox-channel").value;
         config["twitch-channel"] = document.querySelector("#twitch-channel").value;
         config["twitch-ffz"] = document.querySelector("#twitch-ffz").checked;
+        config["mpd-host"] = document.querySelector("#mpd-host").value;
+        config["mpd-port"] = document.querySelector("#mpd-port").value;
         config["mpd-auto"] = document.querySelector("#mpd-auto").checked;
         config["notification-timeout"] = document.querySelector("#notification-timeout").value;
         ipc.send('save-config', config);
@@ -339,6 +346,8 @@ function init(){
     document.querySelector("#mpd-auto").addEventListener("change", save_config);
     document.querySelector("#notification-timeout").addEventListener("change", save_config);
 
+    document.querySelector("#mpd-host").addEventListener("change", mpd_reload);
+    document.querySelector("#mpd-port").addEventListener("change", mpd_reload);
 
     document.querySelector("#reload").addEventListener("click", function reload(){
         location.reload();
