@@ -5,6 +5,8 @@ const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const mpd = require('mpd');
 const fs = require('fs');
+const path = require('path');
+const mkdirp = require('mkdirp');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -75,11 +77,7 @@ app.on('ready', function() {
         web.send('mpd-status', mpd_status);
     });
 
-    var config_file;
-    if("XDG_CONFIG_HOME" in process.env && process.env["XDG_CONFIG_HOME"] != "")
-        config_file = process.env["XDG_CONFIG_HOME"] + "/slate.json";
-    else
-        config_file = process.env["HOME"] + "/.config/slate.json";
+    var config_file = app.getPath('userData') + "/slate.json";
 
     electron.ipcMain.on('request-config', function(){
         fs.readFile(config_file, "utf8", function(err, content){
@@ -93,7 +91,14 @@ app.on('ready', function() {
 
     electron.ipcMain.on('save-config', function save_config(_, config){
         var content = JSON.stringify(config);
-        fs.writeFile(config_file, content);
+        fs.mkdir(path.dirname(config_file), function(err){
+            if(err && err.code != 'EEXIST'){
+                web.send('error', err);
+                console.error(err);
+                return
+            }
+            fs.writeFile(config_file, content);
+        });
     });
 
     mainWindow.loadURL('file://' + __dirname + '/index.html');
