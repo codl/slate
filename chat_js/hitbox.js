@@ -47,6 +47,11 @@
                         content_el.removeChild(video);
                     }
 
+                    let imgs = Array.from(content_el.querySelectorAll("img"));
+                    for(let img of imgs){
+                        img.src = img.src; // resolve protocol
+                    }
+
 
                     msg.content = el.querySelector(".chat-text").innerHTML;
 
