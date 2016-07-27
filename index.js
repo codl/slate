@@ -196,7 +196,7 @@ function init(){
                     wv.executeJavaScript(js);
                 });
             });
-            wv.src = "http://www.hitbox.tv/embedchat/"+channel+"?autoconnect=true";
+            wv.src = "https://www.hitbox.tv/embedchat/"+channel+"?autoconnect=true";
 
             wv.addEventListener("ipc-message", chat_callback);
             container.appendChild(wv);
