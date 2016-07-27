@@ -7,6 +7,7 @@ const mpd = require('mpd');
 const fs = require('fs');
 const path = require('path');
 const mkdirp = require('mkdirp');
+const glob = require('glob');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -46,7 +47,12 @@ app.on('ready', function() {
                 mpd_client.sendCommand("currentsong", function(err, msg){
                     if (err) throw err;
                     var song = extract_mpd_info(msg);
-                    web.send("mpd", song, quiet);
+                    mpd_find_coverart(song, config, function(cover){
+                        if(cover){
+                            song.cover = cover;
+                        }
+                        web.send("mpd", song, quiet);
+                    });
                 });
             }
             mpd_client.on('system-player', send_song);
@@ -134,6 +140,28 @@ function extract_mpd_info(str){
         info[tmp[0]] = tmp.slice(1).join(":").trim();
     }
     return info;
+}
+
+function mpd_find_coverart(song, config, cb){
+    const coverglob = "{* front,* cover,folder}.{jpg,jpeg,gif,png}";
+
+    if(config["mpd-dir"] &&
+            song.file && song.file.indexOf("://") == -1){
+        var dir = config["mpd-dir"] + path.sep +
+            path.dirname(song.file);
+        glob(coverglob,{
+            nocase: true,
+            cwd: dir
+        }, function(e, matches){
+            if(matches.length > 0){
+                return cb("file://" + dir + path.sep + matches[0]);
+            }
+            return cb();
+        });
+    }
+    else {
+        return cb();
+    }
 }
 
 function youtube_login(){

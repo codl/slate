@@ -338,6 +338,7 @@ function init(){
         config["mpd-host"] = document.querySelector("#mpd-host").value;
         config["mpd-port"] = document.querySelector("#mpd-port").value;
         config["mpd-auto"] = document.querySelector("#mpd-auto").checked;
+        config["mpd-dir"] = document.querySelector("#mpd-dir").value;
         config["notification-timeout"] = document.querySelector("#notification-timeout").value;
         ipc.send('save-config', config);
     }
@@ -348,6 +349,7 @@ function init(){
 
     document.querySelector("#mpd-host").addEventListener("change", mpd_reload);
     document.querySelector("#mpd-port").addEventListener("change", mpd_reload);
+    document.querySelector("#mpd-dir").addEventListener("change", mpd_reload);
 
     document.querySelector("#reload").addEventListener("click", function reload(){
         location.reload();
