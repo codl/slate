@@ -143,7 +143,7 @@ function extract_mpd_info(str){
 }
 
 function mpd_find_coverart(song, config, cb){
-    const coverglob = "{* front,* cover,folder}.{jpg,jpeg,gif,png}";
+    const coverglob = "{*front,*cover,folder}.{jpg,jpeg,gif,png}";
 
     if(config["mpd-dir"] &&
             song.file && song.file.indexOf("://") == -1){

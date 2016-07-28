@@ -3,12 +3,15 @@
     <head>
         <title>Slate</title>
         <link rel="stylesheet" href="index.css"/>
+        <script src="https://code.createjs.com/easeljs-0.8.2.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TweenLite.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TimelineLite.min.js"></script>
         <script src="index.js" defer onload="init();"></script>
     </head>
     <body>
         <div class="scene">
-            <div class="nowplaying">
-            </div>
+            <canvas id="nowplaying" width=450 height=120>
+            </canvas>
             <div class="chat">
                 <ul></ul>
             </div>
@@ -57,25 +60,20 @@
                 <indicator class="stopped"></indicator>
                 <h3>MPD notifications</h3>
                 <p>
-                    Host/port: 
+                    Host/port:
                     <input type="text" id="mpd-host" placeholder="localhost"/>
                     <input type="number" id="mpd-port" placeholder="6600"/>
                 </p>
                 <p>
-                    <button id="mpd-show">Show</button>
-                    <button id="mpd-hide">Hide</button>
-                    <button id="mpd-showhide">Show + Hide</button>
+                    <button id="mpd-showhide">Show</button>
                 </p>
                 <p>
                     <label>Auto show+hide on track change:
                         <input type=checkbox checked id="mpd-auto" />
                     </label>
                 </p>
-                <p>Notifications last for
-                    <input type="number" id="notification-timeout" value="10" placeholder="10">
-                seconds</p>
                 <p title="This is used to find cover art">
-                    Music library path: 
+                    Music library path:
                     <input type="text" id="mpd-dir"/>
                 </p>
             </div>

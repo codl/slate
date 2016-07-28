@@ -3,8 +3,191 @@ function init(){
     var fs = require("fs");
     var process = require("process");
 
-    var hidetimeout;
+    function nowplaying_init(){
+        var bg_color = "#333";
+        var top_font = "33pt antonio";
+        var bot_font = "300 20pt antonio";
+        var text_color = "#efdee4";
+        var text_padding = 14;
+
+        var canvas = document.querySelector("canvas#nowplaying");
+        var width = canvas.width;
+        var height = canvas.height;
+
+        var stage = new createjs.Stage(canvas);
+
+        var bgtop = new createjs.Shape();
+        var bgbot = new createjs.Shape();
+        bgtop.height = 0;
+        bgbot.height = 0;
+        stage.addChild(bgtop);
+        stage.addChild(bgbot);
+
+        var bgs = [bgtop, bgbot];
+
+        function maybe_overflow(text, maxlen){
+            if(!maxlen) maxlen = 30;
+
+            text.overflow = false;
+            text.overflowx = 0;
+            var bounds = text.getBounds();
+            text.realwidth = bounds.width;
+            if(text.text.length > maxlen){
+                console.log(text.text.length);
+                text.overflow = true;
+            }
+        }
+
+        var texttop = new createjs.Text("", top_font, text_color);
+        var textbot = new createjs.Text("", bot_font, text_color);
+        texttop.mask = bgtop;
+        textbot.mask = bgbot;
+
+        stage.addChild(texttop);
+        stage.addChild(textbot);
+
+        var texts = [texttop, textbot];
+
+        var cover = new createjs.Bitmap();
+        cover.mask = new createjs.Shape();
+        cover.mask.radius = 0;
+
+        stage.addChild(cover);
+
+        var tl = new TimelineLite({paused: true});
+
+        function render(){
+            requestAnimationFrame(render);
+            for(var bg of bgs){
+                bg.width = width - height - 1; // height is the width of the cover art
+
+                bg.x = height + 1;
+
+                bg.graphics
+                    .clear()
+                    .beginFill(bg_color)
+                    .rect(0, 0, Math.floor(bg.width), Math.floor(bg.height));
+            }
+            bgtop.y = 0;
+            bgbot.y = Math.floor(bgtop.height + 1);
+
+            for(var text of texts){
+                text.x = text.mask.x + text_padding;
+                text.width = text.mask.width - 2*text_padding;
+
+                if(!text.overflow){
+                    text.maxWidth = text.width;
+                }
+
+                else if(text.width < text.realwidth){
+                    text.x -= text.overflowx;
+                }
+
+            }
+            texttop.y = 7;
+            textbot.y = bgbot.y + 5;
+
+            cover.mask.graphics
+                .clear()
+                .beginFill("black")
+                .drawCircle(height, 0, cover.mask.radius);
+
+            stage.update();
+        }
+
+        function maybe_overflow(text){
+
+            text.maxWidth = null;
+            text.overflow = false;
+            text.overflowx = 0;
+            var bounds = text.getBounds();
+            text.realwidth = bounds.width;
+            if(text.realwidth > width){
+                text.overflow = true;
+            }
+        }
+
+        function take(line1, line2, image){
+            texttop.text = line1;
+            textbot.text = line2;
+            for(var text of texts){
+                maybe_overflow(text);
+            }
+
+            cover.image = image;
+            var coverbounds = cover.getBounds();
+            if(coverbounds){
+                var biggest = Math.max(coverbounds.width, coverbounds.height);
+
+                cover.scaleX = cover.scaleY = height / biggest;
+                var scaledbounds = cover.getTransformedBounds();
+                cover.x = height - scaledbounds.width;
+                cover.width = scaledbounds.width;
+            }
+
+            var shown = false;
+
+            if(tl.time() <= tl.getLabelTime("out") && tl.time() >= tl.getLabelTime("wait")){
+                shown = true;
+            }
+
+            tl.clear()
+                .addLabel("in")
+                .fromTo(bgtop, .8, {height: 0},
+                    {height: 3/5 * height, ease: Power3.easeOut}, "in")
+                .fromTo(bgbot, .8, {height: 0},
+                    {height: 2/5 * height, ease: Power3.easeOut}, "in+=0.2")
+                .fromTo(cover.mask, .6, {radius: 0},
+                    {radius: cover.width * Math.sqrt(2), ease: Power3.easeOut}, "in+=0.4");
+
+            tl.addLabel("wait");
+
+            tl.addLabel("overflow", "+=2");
+
+            var stagger = 0;
+
+            var overflowtime = 0;
+            for(var text of texts){
+                if(text.overflow){
+                    var time = (text.realwidth - text.width)/40;
+                    overflowtime = Math.max(overflowtime, time);
+                }
+            }
+            for(var text of texts){
+                if(text.overflow){
+                    console.log("overflow!!!!", text.text, text.text.length, text.realwidth, text.width);
+                    tl.to(text, overflowtime, {
+                        overflowx: text.realwidth - text.width,
+                        ease: Power1.easeInOut
+                    }, "overflow");
+                }
+            }
+            tl.addLabel("wait2", "+=" + Math.max(0, 6-overflowtime));
+
+            tl.addLabel("out", "+=2")
+                .to(bgbot, .4, {height: 0, ease: Power3.easeIn}, "out")
+                .to(bgtop, .4, {height: 0, ease: Power3.easeIn}, "out+=.2")
+                .to(cover.mask, .4, {radius: 0, ease: Power3.easeIn}, "out+=.2");
+
+            if(shown){
+                tl.play("wait");
+            }
+        }
+
+        function show(){
+            if(!tl.isActive()){
+                tl.play(0);
+            }
+        }
+        render();
+
+        return [take, show, tl];
+    }
+
+    var [np_take, np_show, np_tl] = nowplaying_init();
+
     var previous_song;
+
     function update_song(_, song, quiet){
         var hash = song.file;
         if("Title" in song) hash += song.Title;
@@ -15,88 +198,44 @@ function init(){
             return;
         }
         previous_song = hash;
-
-        var np = document.querySelector(".nowplaying");
-
         quiet = quiet || !document.querySelector("#mpd-auto").checked;
 
-        if(!quiet){
-            np.classList.remove("show");
-        }
+        var line1, line2, img;
 
-        var children = Array.from(np.childNodes);
-        for(let child of children){
-            np.removeChild(child);
-        }
+        line1 = song.Title || song.file;
+
+        line2 = "Unknown Artist";
 
         if("Artist" in song){
-            var artist = document.createElement("p");
-            artist.appendChild(document.createTextNode(song.Artist));
-            artist.classList.add("small");
-            np.appendChild(artist);
-        }
-        if("Title" in song){
-            var title = document.createElement("p");
-            title.appendChild(document.createTextNode(song.Title));
-            np.appendChild(title);
-        } else if("file" in song) {
-            var file = document.createElement("p");
-            file.appendChild(document.createTextNode(song.file));
-            np.appendChild(file);
-        }
-        if("Album" in song){
-            var album = document.createElement("p");
-            album.appendChild(document.createTextNode("from " + song.Album));
-            album.classList.add("small");
-            np.appendChild(album);
-        }
-        if("Name" in song){ // station name, for webradios
-            var name = document.createElement("p");
-            var shortened = song.Name;
-            if(song.Name.length > 30){
-                shortened = song.Name.slice(0, 30) + "...";
+            line2 = song.Artist;
+            if("Album" in song && song.Album != song.Title){
+                line2 = song.Artist + " - " + song.Album;
             }
-            name.appendChild(document.createTextNode("on " + shortened));
-            name.classList.add("small");
-            np.appendChild(name);
+        } else if("Name" in song){ // station name, for webradios
+            line2 = "Now playing on " + song.Name;
         }
 
-        if(!quiet){
-            // force layout, otherwise the show class and the elements are added
-            // in the same layout and the transition never plays
-            np.offsetTop;
-            showhide_now_playing();
+        function finish(){
+            np_take(line1, line2, img);
+            if(!quiet){
+                np_show();
+            }
+        }
+
+        if("cover" in song){
+            img = new Image();
+            img.addEventListener("load", finish);
+            img.addEventListener("error", function(){
+                img = null;
+                finish();
+            });
+            img.src = song.cover;
+        } else {
+            finish();
         }
     }
 
-    function showhide_now_playing(){
-        show_now_playing();
-
-        let length = parseFloat(document.querySelector("#notification-timeout").value);
-        if(!length || length < 0.1) length = 10;
-        hidetimeout = window.setTimeout(hide_now_playing, Math.floor(length * 1000));
-    }
-
-    function show_now_playing(){
-        if(hidetimeout){
-            window.clearTimeout(hidetimeout);
-            hidetimeout = 0;
-        }
-        window.requestAnimationFrame(function(){
-            document.querySelector(".nowplaying").classList.add("show")
-        });
-    }
-
-
-    function hide_now_playing(){
-        window.requestAnimationFrame(function(){
-            document.querySelector(".nowplaying").classList.remove("show")
-        });
-    }
-
-    document.querySelector("#mpd-show").addEventListener("click", show_now_playing);
-    document.querySelector("#mpd-hide").addEventListener("click", hide_now_playing);
-    document.querySelector("#mpd-showhide").addEventListener("click", showhide_now_playing);
+    document.querySelector("#mpd-showhide").addEventListener("click", np_show);
 
     var ipc = require("electron").ipcRenderer;
     ipc.on("mpd", update_song);
@@ -339,13 +478,11 @@ function init(){
         config["mpd-port"] = document.querySelector("#mpd-port").value;
         config["mpd-auto"] = document.querySelector("#mpd-auto").checked;
         config["mpd-dir"] = document.querySelector("#mpd-dir").value;
-        config["notification-timeout"] = document.querySelector("#notification-timeout").value;
         ipc.send('save-config', config);
     }
 
     document.querySelector("#make-chat").addEventListener("click", save_config);
     document.querySelector("#mpd-auto").addEventListener("change", save_config);
-    document.querySelector("#notification-timeout").addEventListener("change", save_config);
 
     document.querySelector("#mpd-host").addEventListener("change", mpd_reload);
     document.querySelector("#mpd-port").addEventListener("change", mpd_reload);
