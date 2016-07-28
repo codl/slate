@@ -84,13 +84,15 @@ function init(){
                 }
 
             }
-            texttop.y = 7;
+            texttop.y = bgtop.height - 65;
             textbot.y = bgbot.y + 5;
 
             cover.mask.graphics
                 .clear()
                 .beginFill("black")
                 .drawCircle(height, 0, cover.mask.radius);
+
+            cover.y = (- height * Math.sqrt(2) + cover.mask.radius) / 2;
 
             stage.update();
         }
@@ -138,7 +140,7 @@ function init(){
                 .fromTo(bgbot, .8, {height: 0},
                     {height: 2/5 * height, ease: Power3.easeOut}, "in+=0.2")
                 .fromTo(cover.mask, .6, {radius: 0},
-                    {radius: cover.width * Math.sqrt(2), ease: Power3.easeOut}, "in+=0.4");
+                    {radius: cover.width * Math.sqrt(2), ease: Power3.easeOut}, "in+=0.4")
 
             tl.addLabel("wait");
 
