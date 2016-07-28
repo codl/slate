@@ -147,7 +147,8 @@ function init(){
                 shown = true;
             }
 
-            tl.clear()
+            tl.pause()
+                .clear()
                 .addLabel("in")
                 .fromTo(bgtop, .8, {height: 0},
                     {height: 3/5 * height, ease: Power3.easeOut}, "in")
