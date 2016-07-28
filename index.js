@@ -121,6 +121,20 @@ function init(){
             if(coverbounds){
                 var biggest = Math.max(coverbounds.width, coverbounds.height);
 
+                while(biggest >= height * 2){
+                    // prevent aliasing by scaling in steps
+                    var c = document.createElement('canvas');
+                    var ctx = c.getContext('2d');
+                    c.width = Math.ceil(cover.image.width / 1.2);
+                    c.height = Math.ceil(cover.image.height / 1.2);
+
+                    ctx.drawImage(cover.image, 0, 0, c.width, c.height);
+
+                    cover.image = c;
+                    coverbounds = cover.getBounds();
+                    biggest = Math.max(coverbounds.width, coverbounds.height);
+                }
+
                 cover.scaleX = cover.scaleY = height / biggest;
                 var scaledbounds = cover.getTransformedBounds();
                 cover.x = height - scaledbounds.width;
