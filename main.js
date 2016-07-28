@@ -145,6 +145,13 @@ function extract_mpd_info(str){
 function mpd_find_coverart(song, config, cb){
     const coverglob = "{*front,*cover,folder}.{jpg,jpeg,gif,png}";
 
+    function try_caa(){
+        if("MUSICBRAINZ_ALBUMID" in song){
+            cb("https://coverartarchive.org/release/" + song.MUSICBRAINZ_ALBUMID
+                + "/front");
+        } else cb();
+    }
+
     if(config["mpd-dir"] &&
             song.file && song.file.indexOf("://") == -1){
         var dir = config["mpd-dir"] + path.sep +
@@ -156,11 +163,11 @@ function mpd_find_coverart(song, config, cb){
             if(matches.length > 0){
                 return cb("file://" + dir + path.sep + matches[0]);
             }
-            return cb();
+            return try_caa();
         });
     }
     else {
-        return cb();
+        return try_caa();
     }
 }
 
