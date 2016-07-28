@@ -92,7 +92,7 @@ function init(){
                 .beginFill("black")
                 .drawCircle(height, 0, cover.mask.radius);
 
-            cover.y = (- height * Math.sqrt(2) + cover.mask.radius) / 2;
+            cover.y = (- height * Math.sqrt(2) + cover.mask.radius) / 6;
 
             stage.update();
         }
@@ -158,9 +158,7 @@ function init(){
 
             tl.addLabel("wait");
 
-            tl.addLabel("overflow", "+=2");
-
-            var stagger = 0;
+            tl.addLabel("overflow", "+=.6");
 
             var overflowtime = 0;
             for(var text of texts){
@@ -178,9 +176,8 @@ function init(){
                     }, "overflow");
                 }
             }
-            tl.addLabel("wait2", "+=" + Math.max(0, 6-overflowtime));
 
-            tl.addLabel("out", "+=2")
+            tl.addLabel("out", "overflow+=" + Math.max(0, 6-overflowtime))
                 .to(bgbot, .4, {height: 0, ease: Power3.easeIn}, "out")
                 .to(bgtop, .4, {height: 0, ease: Power3.easeIn}, "out+=.2")
                 .to(cover.mask, .4, {radius: 0, ease: Power3.easeIn}, "out+=.2");
