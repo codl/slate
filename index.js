@@ -178,7 +178,7 @@ function init(){
                 }
             }
 
-            tl.addLabel("out", "overflow+=" + Math.max(0, 6-overflowtime))
+            tl.addLabel("out", "overflow+=" + Math.max(6, overflowtime + .2))
                 .to(bgbot, .4, {height: 0, ease: Power3.easeIn}, "out")
                 .to(bgtop, .4, {height: 0, ease: Power3.easeIn}, "out+=.2")
                 .to(cover.mask, .4, {radius: 0, ease: Power3.easeIn}, "out+=.2");
