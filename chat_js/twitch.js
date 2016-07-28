@@ -22,8 +22,6 @@
                     sent_ready = true;
                 }
 
-                el = el.querySelector("li"); // shed ember wrapper
-
                 if(el.classList.contains("admin")){
                     msg.type = "status";
                 }
