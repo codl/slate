@@ -67,7 +67,8 @@ body {
 }
 
 .chat li {
-    background: black;
+    background: #333;
+    color: #efdee4;
     padding: .6em 1em;
     list-style: none;
     animation: hide-chat-line .6s 40s 1 forwards;
