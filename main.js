@@ -143,7 +143,10 @@ function extract_mpd_info(str){
 }
 
 function mpd_find_coverart(song, config, cb){
-    const coverglob = "{*front,*cover,folder}.{jpg,jpeg,gif,png}";
+    var coverglobs = [
+        "{*front,*cover,folder}.{jpg,jpeg,gif,png}",
+        "*.{jpg,jpeg,gif,png}"
+    ];
 
     function try_caa(){
         if("MUSICBRAINZ_ALBUMID" in song){
@@ -156,15 +159,24 @@ function mpd_find_coverart(song, config, cb){
             song.file && song.file.indexOf("://") == -1){
         var dir = config["mpd-dir"] + path.sep +
             path.dirname(song.file);
-        glob(coverglob,{
-            nocase: true,
-            cwd: dir
-        }, function(e, matches){
-            if(matches.length > 0){
-                return cb("file://" + dir + path.sep + matches[0]);
+        function try_glob(){
+            var coverglob = coverglobs.shift();
+            if(coverglob){
+                glob(coverglob,{
+                    nocase: true,
+                    cwd: dir
+                }, function(e, matches){
+                    if(matches.length > 0){
+                        return cb("file://" + dir + path.sep + matches[0]);
+                    }
+                    return try_glob();
+                });
             }
-            return try_caa();
-        });
+            else {
+                return try_caa();
+            }
+        }
+        try_glob();
     }
     else {
         return try_caa();
