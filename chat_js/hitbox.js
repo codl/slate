@@ -1,7 +1,12 @@
 "use strict";
-(function(){
+(function f(){
+    var chatbody = document.querySelector("ul.chatBody");
+    if(!chatbody){
+        console.log("ah it wasnt here yet");
+        return setTimeout(f, 500);
+    }
     var obs = new MutationObserver(relay);
-    obs.observe(document.querySelector("ul.chatBody"), {childList: true});
+    obs.observe(chatbody, {childList: true});
 
     var sent_ready = false;
 
