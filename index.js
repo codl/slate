@@ -16,7 +16,7 @@ function init(){
 
         var stage = new createjs.Stage(canvas);
         stage.mask = new createjs.Shape();
-        stage.mask.radius = 0;
+        stage.mask.height = 0;
 
         var bg = new createjs.Shape();
         bg.graphics.beginFill(bg_color)
@@ -70,13 +70,13 @@ function init(){
         var text = new createjs.Text("", font, fg_color);
         stage.addChild(text);
 
-        var tl = new TimelineLite({paused: true});
+        var tl = new TimelineLite();
 
         var frame = 0;
         function render(t){
             frame++;
             requestAnimationFrame(render);
-            if(stage.mask.radius < .1){
+            if(stage.mask.height < 0.01){
                 return
             }
 
@@ -88,7 +88,7 @@ function init(){
             stage.mask.graphics
                 .clear()
                 .beginFill("black")
-                .drawCircle(width/2, height/2, stage.mask.radius);
+                .rect(0, height/2 - stage.mask.height/2, width, stage.mask.height);
 
             if(frame%11 == 1){
                 while(stars.length < stars_max / 2 || Math.random() > .97){
@@ -110,23 +110,16 @@ function init(){
             text.text = value;
             var bounds = text.getBounds();
             text.regX = Math.floor(bounds.width/2);
-            text.regY = Math.floor(bounds.height*3/4);
+            text.regY = Math.floor(bounds.height);
             text.maxWidth = width * .9;
-
-            var progress = tl.progress() || 0;
-
-            tl.clear()
-                .fromTo(stage.mask, 1, {radius: 0},
-                    {radius: Math.sqrt(Math.pow(height, 2) + Math.pow(width, 2)) / 2 + 1,
-                     ease: Power3.easeIn})
-                .progress(progress);
         }
 
-        function show(){
-            tl.play();
+        function show(big){
+            tl.clear().to(stage.mask, big?1:0.6, {height: big?height:200});
         }
+
         function hide(){
-            tl.reverse();
+            tl.clear().to(stage.mask, 0.6, {height: 0});
         }
 
         take("Please stand by");
@@ -638,7 +631,8 @@ function init(){
 
     document.querySelector("#mpd-showhide").addEventListener("click", np_show);
 
-    document.querySelector("#standby-show").addEventListener("click", standby_show);
+    document.querySelector("#standby-show").addEventListener("click", ()=>{standby_show(true)});
+    document.querySelector("#standby-show-small").addEventListener("click", ()=>{standby_show(false)});
     document.querySelector("#standby-hide").addEventListener("click", standby_hide);
     document.querySelector("#standby-take").addEventListener("click", function standby_take_from_input(){
         var value = document.querySelector("#standby-value").value;
