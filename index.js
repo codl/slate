@@ -75,7 +75,8 @@ function init(){
         function render(t){
             frame++;
             requestAnimationFrame(render);
-            if(stage.mask.height < 0.01){
+            if(stage.mask.height < 1){
+                stage.clear();
                 return
             }
 
