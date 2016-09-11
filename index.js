@@ -3,6 +3,140 @@ function init(){
     var fs = require("fs");
     var process = require("process");
 
+    function standby_init(){
+        var bg_color = "#efdee4";
+        var fg_color = "#333";
+        var font = "45pt antonio";
+        var tscale = 400;
+
+
+        var canvas = document.querySelector("canvas#standby");
+        var width = canvas.width;
+        var height = canvas.height;
+
+        var stage = new createjs.Stage(canvas);
+        stage.mask = new createjs.Shape();
+        stage.mask.radius = 0;
+
+        var bg = new createjs.Shape();
+        bg.graphics.beginFill(bg_color)
+            .rect(0, 0, width, height);
+        stage.addChild(bg);
+
+        var starsShape = new createjs.Shape();
+        stage.addChild(starsShape);
+
+        var stars = [];
+        var stars_max = 15;
+
+        function Star(){
+            this.x = Math.random() * width;
+            this.y = Math.random() * height;
+            this.radius = Math.random() * 100 + 10;
+            this.angle = Math.random() * Math.PI * 2;
+            this.draw_on = function draw_on(graphics){
+                var radius2 = this.radius / 2.618;
+                // it took me a half hour and half an A4 sheet to remember
+                // enough trigonometry to find this magic number
+                // please dont ask about it
+
+                var randmult = .1 * this.radius;
+
+                // radial: [r, theta]
+                var points = [
+                        [this.radius, 0 + this.angle],
+                        [radius2,     Math.PI/5 + this.angle],
+                        [this.radius, 2*Math.PI/5 + this.angle],
+                        [radius2,     3*Math.PI/5 + this.angle],
+                        [this.radius, 4*Math.PI/5 + this.angle],
+                        [radius2,     Math.PI + this.angle],
+                        [this.radius, 6*Math.PI/5 + this.angle],
+                        [radius2,     7*Math.PI/5 + this.angle],
+                        [this.radius, 8*Math.PI/5 + this.angle],
+                        [radius2,     9*Math.PI/5 + this.angle]
+                    ];
+
+                graphics.beginStroke(fg_color)
+                for(var point of points){
+                    graphics
+                        .lineTo(this.x + point[0] * Math.cos(point[1]) + Math.random()*randmult,
+                                this.y + point[0] * Math.sin(point[1]) + Math.random()*randmult)
+                }
+                graphics.closePath();
+            }
+        }
+
+
+        var text = new createjs.Text("", font, fg_color);
+        stage.addChild(text);
+
+        var tl = new TimelineLite({paused: true});
+
+        var frame = 0;
+        function render(t){
+            frame++;
+            requestAnimationFrame(render);
+            if(stage.mask.radius < .1){
+                return
+            }
+
+            t /= tscale;
+            text.x = width / 2 + Math.sin(t/3) * 20;
+            text.y = height / 2 + Math.cos(t) * 15;
+            text.rotation = Math.sin(t/4.4) * 3;
+
+            stage.mask.graphics
+                .clear()
+                .beginFill("black")
+                .drawCircle(width/2, height/2, stage.mask.radius);
+
+            if(frame%11 == 1){
+                while(stars.length < stars_max / 2 || Math.random() > .97){
+                    stars.push(new Star());
+                }
+                while(stars.length > stars_max || Math.random() > .97){
+                    stars.shift();
+                }
+                starsShape.graphics.clear();
+                for(var star of stars){
+                    star.draw_on(starsShape.graphics);
+                }
+            }
+
+            stage.update();
+        }
+
+        function take(value){
+            text.text = value;
+            var bounds = text.getBounds();
+            text.regX = Math.floor(bounds.width/2);
+            text.regY = Math.floor(bounds.height*3/4);
+            text.maxWidth = width * .9;
+
+            var progress = tl.progress() || 0;
+
+            tl.clear()
+                .fromTo(stage.mask, 1, {radius: 0},
+                    {radius: Math.sqrt(Math.pow(height, 2) + Math.pow(width, 2)) / 2 + 1,
+                     ease: Power3.easeIn})
+                .progress(progress);
+        }
+
+        function show(){
+            tl.play();
+        }
+        function hide(){
+            tl.reverse();
+        }
+
+        take("Please stand by");
+        render(0);
+
+        return [take, show, hide];
+    }
+
+    var [standby_take, standby_show, standby_hide] = standby_init();
+
     function nowplaying_init(){
         var bg_color = "#333";
         var top_font = "33pt antonio";
@@ -249,7 +383,7 @@ function init(){
         }
     }
 
-    document.querySelector("#mpd-showhide").addEventListener("click", np_show);
+
 
     var ipc = require("electron").ipcRenderer;
     ipc.on("mpd", update_song);
@@ -501,6 +635,16 @@ function init(){
     document.querySelector("#mpd-host").addEventListener("change", mpd_reload);
     document.querySelector("#mpd-port").addEventListener("change", mpd_reload);
     document.querySelector("#mpd-dir").addEventListener("change", mpd_reload);
+
+    document.querySelector("#mpd-showhide").addEventListener("click", np_show);
+
+    document.querySelector("#standby-show").addEventListener("click", standby_show);
+    document.querySelector("#standby-hide").addEventListener("click", standby_hide);
+    document.querySelector("#standby-take").addEventListener("click", function standby_take_from_input(){
+        var value = document.querySelector("#standby-value").value;
+        standby_take(value);
+        document.querySelector("#standby-value-feedback").textContent = value;
+    });
 
     document.querySelector("#reload").addEventListener("click", function reload(){
         location.reload();

@@ -15,8 +15,22 @@
             <div class="chat">
                 <ul></ul>
             </div>
+            <canvas id="standby" width=1280 height=720>
+            </canvas>
         </div>
         <div class="controls">
+            <div id="standby-controls">
+                <h3>Standby slate</h3>
+                <p id="standby-value-feedback">
+                    Please stand by
+                </p>
+                <p>
+                    <input type="text" id="standby-value" value="Please stand by">
+                    <button id="standby-take">Take</button>
+                        <button id="standby-show">Show</button>
+                        <button id="standby-hide">Hide</button>
+                </p>
+            </div>
             <div id="chat-controls">
                 <indicator class="stopped"></indicator>
                 <h3>Chat</h3>
