@@ -122,7 +122,7 @@ function init(){
             tl.clear().to(stage.mask, 0.6, {height: 0});
         }
 
-        take("Please stand by");
+        take("Starting soon!");
         render(0);
 
         return [take, show, hide];
