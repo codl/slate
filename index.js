@@ -15,6 +15,7 @@ function init(){
         var height = canvas.height;
 
         var stage = new createjs.Stage(canvas);
+        stage.y = 200;
         stage.mask = new createjs.Shape();
         stage.mask.height = 0;
 
@@ -70,8 +71,6 @@ function init(){
         var text = new createjs.Text("", font, fg_color);
         stage.addChild(text);
 
-        var tl = new TimelineLite();
-
         var frame = 0;
         function render(t){
             frame++;
@@ -115,11 +114,14 @@ function init(){
         }
 
         function show(big){
-            tl.clear().to(stage.mask, big?1:0.6, {height: big?height:200});
+            var t=big?1:0.6;
+            TweenLite.to(stage.mask, t, {height: big?height:200});
+            TweenLite.to(stage, t, {y:0});
         }
 
         function hide(){
-            tl.clear().to(stage.mask, 0.6, {height: 0});
+            TweenLite.to(stage.mask, 0.6, {height: 0});
+            TweenLite.to(stage, 0.6, {y: 200});
         }
 
         take("Starting soon!");
