@@ -25,6 +25,7 @@ function init(){
         stage.addChild(bg);
 
         var starsShape = new createjs.Shape();
+        starsShape.alpha = .6;
         stage.addChild(starsShape);
 
         var stars = [];
@@ -57,7 +58,8 @@ function init(){
                         [radius2,     9*Math.PI/5 + this.angle]
                     ];
 
-                graphics.beginStroke(fg_color)
+                graphics.beginStroke(fg_color);
+                graphics.setStrokeStyle(2, "round", "round");
                 for(var point of points){
                     graphics
                         .lineTo(this.x + point[0] * Math.cos(point[1]) + Math.random()*randmult,
