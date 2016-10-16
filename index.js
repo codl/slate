@@ -649,7 +649,7 @@ function init(){
         location.reload();
     });
     document.querySelector("#inspect").addEventListener("click", function inspect(){
-        require("remote").getCurrentWebContents().openDevTools({detach: true});
+        require("electron").remote.getCurrentWebContents().openDevTools({detach: true});
     });
     document.querySelector("#inspect-chat").addEventListener("click", function inspect(){
         document.querySelector("#chat-webviews webview").openDevTools();
