@@ -44,10 +44,10 @@
                     }
                     msg.content = content_el.innerHTML;
 
-                    if(el.querySelector(".stricon")){
+                    if(el.querySelector(".msgAdminUsername")){
                         msg.badge = "streamer";
                     }
-                    else if(el.querySelector(".modicon")){
+                    else if(el.querySelector(".msgModeratorUsername")){
                         msg.badge = "moderator";
                     }
                 }
