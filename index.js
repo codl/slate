@@ -74,13 +74,18 @@ function init(){
         stage.addChild(text);
 
         var frame = 0;
+        var cleared = false;
         function render(t){
             frame++;
             requestAnimationFrame(render);
             if(stage.mask.height < 1){
-                stage.clear();
+                if(!cleared){
+                    stage.clear();
+                    cleared = true;
+                }
                 return
             }
+            cleared = false;
 
             t /= tscale;
             text.x = width / 2 + Math.sin(t/3) * 20;
