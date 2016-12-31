@@ -28,6 +28,7 @@ app.on('ready', function() {
     });
 
     var web = mainWindow.webContents;
+    //web.openDevTools();
 
     var mpd_status = 'stopped';
 
@@ -44,7 +45,7 @@ app.on('ready', function() {
         mpd_client.on('ready', function(){
             set_mpd_status('ready');
             function send_song(quiet){
-                mpd_client.sendCommand("currentsong", function(err, msg){
+                mpd_client.sendCommands(["currentsong", "status"], function(err, msg){
                     if (err) throw err;
                     var song = extract_mpd_info(msg);
                     mpd_find_coverart(song, config, function(cover){

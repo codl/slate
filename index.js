@@ -142,10 +142,9 @@ function init(){
 
     function nowplaying_init(){
         var bg_color = "#333";
-        var top_font = "33pt antonio";
-        var bot_font = "300 20pt antonio";
-        var text_color = "#efdee4";
-        var text_padding = 14;
+        var font = "300 16pt antonio";
+        var fg_color = "#efdee4";
+        var padding = 12;
 
         var canvas = document.querySelector("canvas#nowplaying");
         var width = canvas.width;
@@ -153,83 +152,66 @@ function init(){
 
         var stage = new createjs.Stage(canvas);
 
-        var bgtop = new createjs.Shape();
-        var bgbot = new createjs.Shape();
-        bgtop.height = 0;
-        bgbot.height = 0;
-        stage.addChild(bgtop);
-        stage.addChild(bgbot);
+        var bg = new createjs.Shape();
+        bg.points = [ // clockwise, starting from top left
+            {x: 0, y: height},
+            {x: 0, y: height},
+            {x: 0, y: height},
+            {x: 0, y: height}
+        ]
+        stage.addChild(bg);
 
-        var bgs = [bgtop, bgbot];
+        var indicator = new createjs.Shape();
+        indicator.y = height * 5/12;
+        indicator.x = 16;
+        indicator.height = 15;
+        indicator.width = 2/3 * indicator.height;
+        indicator.state = "play";
+        indicator.mask = bg;
 
-        function maybe_overflow(text, maxlen){
-            if(!maxlen) maxlen = 30;
+        stage.addChild(indicator);
 
-            text.overflow = false;
-            text.overflowx = 0;
-            var bounds = text.getBounds();
-            text.realwidth = bounds.width;
-            if(text.text.length > maxlen){
-                console.log(text.text.length);
-                text.overflow = true;
-            }
-        }
+        var text = new createjs.Text("Sample text", font, fg_color);
+        text.mask = bg;
+        text.x = indicator.x + indicator.width + padding;
+        text.y = padding;
+        text.maxWidth = width - padding - text.x;
 
-        var texttop = new createjs.Text("", top_font, text_color);
-        var textbot = new createjs.Text("", bot_font, text_color);
-        texttop.mask = bgtop;
-        textbot.mask = bgbot;
+        stage.addChild(text);
 
-        stage.addChild(texttop);
-        stage.addChild(textbot);
-
-        var texts = [texttop, textbot];
-
-        var cover = new createjs.Bitmap();
-        cover.mask = new createjs.Shape();
-        cover.mask.radius = 0;
-
-        stage.addChild(cover);
-
-        var tl = new TimelineLite({paused: true});
+        var tl = new TimelineLite();
 
         function render(){
             requestAnimationFrame(render);
-            for(var bg of bgs){
-                bg.width = width - height - 1; // height is the width of the cover art
 
-                bg.x = height + 1;
-
-                bg.graphics
-                    .clear()
-                    .beginFill(bg_color)
-                    .rect(0, 0, Math.floor(bg.width), Math.floor(bg.height));
-            }
-            bgtop.y = 0;
-            bgbot.y = Math.floor(bgtop.height + 1);
-
-            for(var text of texts){
-                text.x = text.mask.x + text_padding;
-                text.width = text.mask.width - 2*text_padding;
-
-                if(!text.overflow){
-                    text.maxWidth = text.width;
-                }
-
-                else if(text.width < text.realwidth){
-                    text.x -= text.overflowx;
-                }
-
-            }
-            texttop.y = bgtop.height - 65;
-            textbot.y = bgbot.y + 5;
-
-            cover.mask.graphics
+            bg.graphics
                 .clear()
-                .beginFill("black")
-                .drawCircle(height, 0, cover.mask.radius);
+                .beginFill(bg_color)
+                .moveTo(bg.points[0].x, bg.points[0].y)
+                .lineTo(bg.points[1].x, bg.points[1].y)
+                .lineTo(bg.points[2].x, bg.points[2].y)
+                .lineTo(bg.points[3].x, bg.points[3].y);
 
-            cover.y = (- height * Math.sqrt(2) + cover.mask.radius) / 6;
+            indicator.graphics
+                .clear()
+                .beginFill(fg_color);
+
+            if(indicator.state == "play"){
+                indicator.graphics
+                    .moveTo(0,               0)
+                    .lineTo(indicator.width, indicator.height/2)
+                    .lineTo(0,               indicator.height)
+            } else {
+                indicator.graphics
+                    .moveTo(0,                   0)
+                    .lineTo(indicator.width/3,   0)
+                    .lineTo(indicator.width/3,   indicator.height)
+                    .lineTo(0,                   indicator.height)
+                    .moveTo(indicator.width*2/3, 0)
+                    .lineTo(indicator.width,     0)
+                    .lineTo(indicator.width,     indicator.height)
+                    .lineTo(indicator.width*2/3, indicator.height)
+            }
 
             stage.update();
         }
@@ -246,102 +228,70 @@ function init(){
             }
         }
 
-        function take(line1, line2, image){
-            texttop.text = line1;
-            textbot.text = line2;
-            for(var text of texts){
-                maybe_overflow(text);
-            }
+        let shown = false;
 
-            cover.image = image;
-            var coverbounds = cover.getBounds();
-            if(coverbounds){
-                var biggest = Math.max(coverbounds.width, coverbounds.height);
+        function bgWidth(){
+            return text.x + text.getMeasuredWidth() + padding;
+        }
 
-                while(biggest >= height * 2){
-                    // prevent aliasing by scaling in steps
-                    var c = document.createElement('canvas');
-                    var ctx = c.getContext('2d');
-                    c.width = Math.ceil(cover.image.width / 1.2);
-                    c.height = Math.ceil(cover.image.height / 1.2);
-
-                    ctx.drawImage(cover.image, 0, 0, c.width, c.height);
-
-                    cover.image = c;
-                    coverbounds = cover.getBounds();
-                    biggest = Math.max(coverbounds.width, coverbounds.height);
-                }
-
-                cover.scaleX = cover.scaleY = height / biggest;
-                var scaledbounds = cover.getTransformedBounds();
-                cover.x = height - scaledbounds.width;
-                cover.width = scaledbounds.width;
-            }
-
-            var shown = false;
-
-            if(tl.time() <= tl.getLabelTime("out") && tl.time() >= tl.getLabelTime("wait")){
-                shown = true;
-            }
-
-            tl.pause()
-                .clear()
-                .addLabel("in")
-                .fromTo(bgtop, .8, {height: 0},
-                    {height: 3/5 * height, ease: Power3.easeOut}, "in")
-                .fromTo(bgbot, .8, {height: 0},
-                    {height: 2/5 * height, ease: Power3.easeOut}, "in+=0.2")
-                .fromTo(cover.mask, .6, {radius: 0},
-                    {radius: cover.width * Math.sqrt(2), ease: Power3.easeOut}, "in+=0.4")
-
-            tl.addLabel("wait");
-
-            tl.addLabel("overflow", "+=.6");
-
-            var overflowtime = 0;
-            for(var text of texts){
-                if(text.overflow){
-                    var time = (text.realwidth - text.width)/40;
-                    overflowtime = Math.max(overflowtime, time);
-                }
-            }
-            for(var text of texts){
-                if(text.overflow){
-                    console.log("overflow!!!!", text.text, text.text.length, text.realwidth, text.width);
-                    tl.to(text, overflowtime, {
-                        overflowx: text.realwidth - text.width,
-                        ease: Power1.easeInOut
-                    }, "overflow");
-                }
-            }
-
-            tl.addLabel("out", "overflow+=" + Math.max(6, overflowtime + .2))
-                .to(bgbot, .4, {height: 0, ease: Power3.easeIn}, "out")
-                .to(bgtop, .4, {height: 0, ease: Power3.easeIn}, "out+=.2")
-                .to(cover.mask, .4, {radius: 0, ease: Power3.easeIn}, "out+=.2");
-
+        function hide(){
             if(shown){
-                tl.play("wait");
+                shown = false;
+                tl.to(bg.points[0], .1, {y: height})
+                    .to(bg.points[1], .1, {y: height});
             }
         }
 
         function show(){
-            if(!tl.isActive()){
-                tl.play(0);
+            if(!shown){
+                shown = true;
+                bg.points[1].x = bg.points[2].x = bgWidth();
+                tl.to(bg.points[0], .1, {y: 0})
+                    .to(bg.points[1], .1, {y: 0});
             }
         }
+
+        let pauseTimeout = 0;
+
+        function takeSong(line, state){
+            if(state != "stop"){
+                indicator.state = state;
+                text.text = line;
+
+                if(shown){
+                    const newWidth = bgWidth();
+                    tl.add("newWidth")
+                        .to(bg.points[1], .2, {x: newWidth}, "newWidth")
+                        .to(bg.points[2], .3, {x: newWidth}, "newWidth");
+                } else {
+                    show();
+                }
+
+            } else if(state == "stop"){
+                hide();
+            }
+
+
+            if(state == "pause"){
+                pauseTimeout = setTimeout(hide, 5000);
+            } else {
+                clearTimeout(pauseTimeout);
+            }
+        }
+
         render();
 
-        return [take, show, tl];
+        return [takeSong];
     }
 
-    var [np_take, np_show, np_tl] = nowplaying_init();
+    var [np_takeSong] = nowplaying_init();
 
     var previous_song;
 
-    function update_song(_, song, quiet){
-        var hash = song.file;
-        if("Title" in song) hash += song.Title;
+    function update_mpd(_, data, quiet){
+        var hash = data.state;
+        if("file" in data) hash += data.file;
+        if("Title" in data) hash += data.Title;
         // this ensures that the notification will show
         // if listening to a stream and the song info changes
 
@@ -349,47 +299,24 @@ function init(){
             return;
         }
         previous_song = hash;
-        quiet = quiet || !document.querySelector("#mpd-auto").checked;
 
-        var line1, line2, img;
-
-        line1 = song.Title || song.file;
-
-        line2 = "Unknown Artist";
-
-        if("Artist" in song){
-            line2 = song.Artist;
-            if("Album" in song && song.Album != song.Title){
-                line2 = song.Artist + " - " + song.Album;
-            }
-        } else if("Name" in song){ // station name, for webradios
-            line2 = "Now playing on " + song.Name;
-        }
-
-        function finish(){
-            np_take(line1, line2, img);
-            if(!quiet){
-                np_show();
-            }
-        }
-
-        if("cover" in song){
-            img = new Image();
-            img.addEventListener("load", finish);
-            img.addEventListener("error", function(){
-                img = null;
-                finish();
-            });
-            img.src = song.cover;
+        if(data.state == "stop"){
+            np_takeSong("Stopped", data.state);
         } else {
-            finish();
+
+            var part1, part2;
+
+            part1 = data.Artist || data.Name || "Unknown Artist";
+            part2 = data.Title || data.file;
+
+            np_takeSong(`${part1} - ${part2}`, data.state);
         }
     }
 
 
 
     var ipc = require("electron").ipcRenderer;
-    ipc.on("mpd", update_song);
+    ipc.on("mpd", update_mpd);
 
     function set_mpd_status(_, status, message){
         var indicator = document.querySelector("#mpd-controls indicator");
@@ -627,19 +554,15 @@ function init(){
         config["twitch-ffz"] = document.querySelector("#twitch-ffz").checked;
         config["mpd-host"] = document.querySelector("#mpd-host").value;
         config["mpd-port"] = document.querySelector("#mpd-port").value;
-        config["mpd-auto"] = document.querySelector("#mpd-auto").checked;
         config["mpd-dir"] = document.querySelector("#mpd-dir").value;
         ipc.send('save-config', config);
     }
 
     document.querySelector("#make-chat").addEventListener("click", save_config);
-    document.querySelector("#mpd-auto").addEventListener("change", save_config);
 
     document.querySelector("#mpd-host").addEventListener("change", mpd_reload);
     document.querySelector("#mpd-port").addEventListener("change", mpd_reload);
     document.querySelector("#mpd-dir").addEventListener("change", mpd_reload);
-
-    document.querySelector("#mpd-showhide").addEventListener("click", np_show);
 
     document.querySelector("#standby-show").addEventListener("click", ()=>{standby_show(true)});
     document.querySelector("#standby-show-small").addEventListener("click", ()=>{standby_show(false)});

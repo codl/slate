@@ -173,8 +173,8 @@ body {
 
 #nowplaying {
     position: absolute;
-    bottom: 30px;
-    left: 30px;
+    bottom: 0;
+    left: 10%;
     z-index: 100;
 }
 

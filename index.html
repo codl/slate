@@ -10,7 +10,7 @@
     </head>
     <body>
         <div class="scene">
-            <canvas id="nowplaying" width=450 height=120>
+            <canvas id="nowplaying" width=500 height=50>
             </canvas>
             <div class="chat">
                 <ul></ul>
@@ -75,19 +75,11 @@
             </div>
             <div id="mpd-controls">
                 <indicator class="stopped"></indicator>
-                <h3>MPD notifications</h3>
+                <h3>MPD</h3>
                 <p>
                     Host/port:
                     <input type="text" id="mpd-host" placeholder="localhost"/>
                     <input type="number" id="mpd-port" placeholder="6600"/>
-                </p>
-                <p>
-                    <button id="mpd-showhide">Show</button>
-                </p>
-                <p>
-                    <label>Auto show+hide on track change:
-                        <input type=checkbox checked id="mpd-auto" />
-                    </label>
                 </p>
                 <p title="This is used to find cover art">
                     Music library path:
