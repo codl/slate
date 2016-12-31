@@ -39,10 +39,10 @@
                 }
                 msg.content = content_el.innerHTML;
 
-                if(el.querySelector(".badge .broadcaster")){
+                if(el.querySelector(".badge.broadcaster")){
                     msg.badge = "streamer"
                 }
-                else if(el.querySelector(".badge .moderator")){
+                else if(el.querySelector(".badge.moderator")){
                     msg.badge = "moderator"
                 }
 
