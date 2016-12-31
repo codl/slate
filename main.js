@@ -148,7 +148,7 @@ function mpd_find_coverart(song, config, cb){
         "*.{jpg,jpeg,gif,png}"
     ];
 
-    function try_caa(){
+    function try_coverartarchive(){
         if("MUSICBRAINZ_ALBUMID" in song){
             cb("https://coverartarchive.org/release/" + song.MUSICBRAINZ_ALBUMID
                 + "/front");
@@ -173,13 +173,13 @@ function mpd_find_coverart(song, config, cb){
                 });
             }
             else {
-                return try_caa();
+                return try_coverartarchive();
             }
         }
         try_glob();
     }
     else {
-        return try_caa();
+        return try_coverartarchive();
     }
 }
 
