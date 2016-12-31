@@ -6,8 +6,8 @@
         ipc.sendToHost('status', 'ready');
     }
 
-    socket.on('connect', ready);
-    if(socket.connected){
+    socket.On('Connect', ready);
+    if(socket.Connected){
         ready();
     }
 
