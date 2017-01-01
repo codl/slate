@@ -188,10 +188,11 @@ function init(){
             }
 
             height = height * target / width;
-            buf.width = target;
+            width = target;
+            buf.width = width;
             buf.height = height;
-            bufctx.drawImage(c, 0, 0, target, height);
-            c.width = target;
+            bufctx.drawImage(c, 0, 0, width, height);
+            c.width = width;
             c.height = height;
             ctx.drawImage(buf, 0, 0);
 
