@@ -156,6 +156,9 @@ function init(){
         let pauseTimeout = 0;
 
         function scale_cover(image){
+            if(!image){
+                return image;
+            }
             const c = document.createElement('canvas'),
                 buf = document.createElement('canvas'),
                 ctx = c.getContext('2d'),
