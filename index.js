@@ -15,14 +15,17 @@ function init(){
 
         var stage = new createjs.Stage(canvas);
 
+        var bar = new createjs.Container();
+        bar.x = 100;
+
         var bg = new createjs.Shape();
         bg.points = [ // clockwise, starting from top left
             {x: 0, y: height},
             {x: 0, y: height},
             {x: 0, y: height},
             {x: 0, y: height}
-        ]
-        stage.addChild(bg);
+        ];
+        bar.addChild(bg);
 
         var indicator = new createjs.Shape();
         indicator.y = height * 5/12;
@@ -32,15 +35,38 @@ function init(){
         indicator.state = "play";
         indicator.mask = bg;
 
-        stage.addChild(indicator);
+        bar.addChild(indicator);
 
         var text = new createjs.Text("Sample text", font, fg_color);
         text.mask = bg;
         text.x = indicator.x + indicator.width + padding;
         text.y = padding;
-        text.maxWidth = width - padding - text.x;
+        text.maxWidth = width - padding - text.x - bar.x;
 
-        stage.addChild(text);
+        bar.addChild(text);
+
+        stage.addChild(bar);
+
+        let cover = new createjs.Container();
+
+        cover.mask = new createjs.Shape();
+        cover.mask.points = [ // clockwise, starting from top left
+            {x: 95, y: height},
+            {x: 100, y: height},
+            {x: 100, y: height},
+            {x: 0, y: height}
+        ];
+
+        let cover_bg = new createjs.Shape();
+        cover_bg.graphics
+            .beginRadialGradientFill(["#666", bg_color], [0, 1], 64, 64, 0, 64, 64, 100)
+            .drawRect(0,0,width,height);
+        cover.addChild(cover_bg);
+
+        let cover_bitmap = new createjs.Bitmap();
+        cover.addChild(cover_bitmap);
+
+        stage.addChild(cover);
 
         var tl = new TimelineLite();
 
@@ -76,6 +102,14 @@ function init(){
                     .lineTo(indicator.width*2/3, indicator.height)
             }
 
+            cover.mask.graphics
+                .clear()
+                .beginFill(0)
+                .moveTo(cover.mask.points[0].x, cover.mask.points[0].y)
+                .lineTo(cover.mask.points[1].x, cover.mask.points[1].y)
+                .lineTo(cover.mask.points[2].x, cover.mask.points[2].y)
+                .lineTo(cover.mask.points[3].x, cover.mask.points[3].y);
+
             stage.update();
         }
 
@@ -100,8 +134,11 @@ function init(){
         function hide(){
             if(shown){
                 shown = false;
-                tl.to(bg.points[0], .1, {y: height})
-                    .to(bg.points[1], .1, {y: height});
+                tl
+                    .to(bg.points[1], .1, {y: height})
+                    .to(cover.mask.points[0], .1, {y: height, x:95})
+                    .to(cover.mask.points[1], .1, {y: height})
+                    .to(bg.points[0], .1, {y: height});
             }
         }
 
@@ -110,16 +147,59 @@ function init(){
                 shown = true;
                 bg.points[1].x = bg.points[2].x = bgWidth();
                 tl.to(bg.points[0], .1, {y: 0})
-                    .to(bg.points[1], .1, {y: 0});
+                    .to(bg.points[1], .1, {y: 0})
+                    .to(cover.mask.points[1], .1, {y: 0})
+                    .to(cover.mask.points[0], .1, {y: 0, x:0});
             }
         }
 
         let pauseTimeout = 0;
 
-        function takeSong(line, state){
+        function scale_cover(image){
+            const c = document.createElement('canvas'),
+                buf = document.createElement('canvas'),
+                ctx = c.getContext('2d'),
+                bufctx = buf.getContext('2d');
+            const target = 100;
+            let width = image.naturalWidth;
+            c.width = Math.max(width, target);
+            let height = image.naturalHeight;
+            c.height = height;
+            if(width < target){
+                c.height = Math.floor(c.height * target / width);
+            }
+            ctx.drawImage(image, 0, 0, c.width, c.height);
+            while(width > 2 * target){
+                // prevent aliasing by scaling in steps
+                width = Math.ceil(width / 1.2);
+                height = Math.ceil(width / 1.2);
+                buf.height = height;
+                buf.width = width;
+                bufctx.drawImage(c, 0, 0, width, height);
+                c.width = width;
+                c.height = height;
+                ctx.drawImage(buf, 0, 0);
+                // it is very silly that i have to juggle two canvases but
+                // resizing a canvas clears it instead of just cropping it
+            }
+
+            height = height * target / width;
+            buf.width = target;
+            buf.height = height;
+            bufctx.drawImage(c, 0, 0, target, height);
+            c.width = target;
+            c.height = height;
+            ctx.drawImage(buf, 0, 0);
+
+            return c;
+        }
+
+        function take(line, state, cover_image){
             if(state != "stop"){
                 indicator.state = state;
                 text.text = line;
+                cover_image = scale_cover(cover_image);
+                cover_bitmap.image = cover_image;
 
                 if(shown){
                     const newWidth = bgWidth();
@@ -144,10 +224,10 @@ function init(){
 
         render();
 
-        return [takeSong];
+        return [take];
     }
 
-    var [np_takeSong] = nowplaying_init();
+    var [np_take] = nowplaying_init();
 
     var previous_song;
 
@@ -164,7 +244,7 @@ function init(){
         previous_song = hash;
 
         if(data.state == "stop"){
-            np_takeSong("Stopped", data.state);
+            np_take("Stopped", data.state);
         } else {
 
             var part1, part2;
@@ -172,7 +252,23 @@ function init(){
             part1 = data.Artist || data.Name || "Unknown Artist";
             part2 = data.Title || data.file;
 
-            np_takeSong(`${part1} - ${part2}`, data.state);
+            let cover;
+            function finish(){
+                np_take(`${part1} - ${part2}`, data.state, cover);
+            }
+
+            if("cover" in data){
+                cover = new Image();
+                cover.corssOrigin = "anonymous";
+                cover.addEventListener("load", finish);
+                cover.addEventListener("error", function(){
+                    cover = null;
+                    finish();
+                });
+                cover.src = data.cover;
+            } else {
+                finish();
+            }
         }
     }
 

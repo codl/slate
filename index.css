@@ -174,8 +174,8 @@ body {
 #nowplaying {
     position: absolute;
     bottom: 0;
-    left: 10%;
-    z-index: 100;
+    left: 150px;
+    z-index: 90;
 }
 
 #standby {
