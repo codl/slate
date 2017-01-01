@@ -28,7 +28,7 @@ function init(){
         bar.addChild(bg);
 
         var indicator = new createjs.Shape();
-        indicator.y = height * 5/12;
+        indicator.y = 20;
         indicator.x = 16;
         indicator.height = 15;
         indicator.width = 2/3 * indicator.height;
@@ -51,7 +51,7 @@ function init(){
 
         cover.mask = new createjs.Shape();
         cover.mask.points = [ // clockwise, starting from top left
-            {x: 95, y: height},
+            {x: 0, y: height},
             {x: 100, y: height},
             {x: 100, y: height},
             {x: 0, y: height}
@@ -136,9 +136,10 @@ function init(){
                 shown = false;
                 tl
                     .to(bg.points[1], .1, {y: height})
-                    .to(cover.mask.points[0], .1, {y: height, x:95})
+                    .add("a")
+                    .to(bg.points[0], .1, {y: height})
                     .to(cover.mask.points[1], .1, {y: height})
-                    .to(bg.points[0], .1, {y: height});
+                    .to(cover.mask.points[0], .1, {y: height});
             }
         }
 

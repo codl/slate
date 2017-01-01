@@ -16,6 +16,7 @@ body {
 .controls > div {
     margin: 1em;
     flex: 1;
+    max-width: 300px;
     overflow: auto;
 }
 
