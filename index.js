@@ -176,7 +176,7 @@ function init(){
             while(width > 2 * target){
                 // prevent aliasing by scaling in steps
                 width = Math.ceil(width / 1.2);
-                height = Math.ceil(width / 1.2);
+                height = Math.ceil(height / 1.2);
                 buf.height = height;
                 buf.width = width;
                 bufctx.drawImage(c, 0, 0, width, height);
