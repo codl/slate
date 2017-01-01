@@ -1,14 +1,14 @@
 "use strict";
 (function f(){
-    var chatbody = document.querySelector("ul.chatBody");
+    let chatbody = document.querySelector("ul.chatBody");
     if(!chatbody){
         console.log("ah it wasnt here yet");
         return setTimeout(f, 500);
     }
-    var obs = new MutationObserver(relay);
+    let obs = new MutationObserver(relay);
     obs.observe(chatbody, {childList: true});
 
-    var sent_ready = false;
+    let sent_ready = false;
 
     function relay(mutations){
         for(let mut of mutations){
@@ -23,7 +23,7 @@
                     sent_ready = true;
                 }
 
-                var status_el = el.querySelector(".chat-status-message");
+                let status_el = el.querySelector(".chat-status-message");
                 if(status_el){
                     msg.type = "status";
                     status_el.removeChild(status_el.querySelector(".chat-timestamp"));
@@ -60,7 +60,7 @@
 
                     msg.content = el.querySelector(".chat-text").innerHTML;
 
-                    var title_el = el.querySelector(".title");
+                    let title_el = el.querySelector(".title");
                     if(!title_el){
                         // retrieve name and badges from a previous message
                         let prev = el;

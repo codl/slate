@@ -11,7 +11,7 @@ const glob = require('glob');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-var mainWindow = null;
+let mainWindow = null;
 
 app.on('ready', function() {
     mainWindow = new BrowserWindow({
@@ -27,12 +27,12 @@ app.on('ready', function() {
         app.quit();
     });
 
-    var web = mainWindow.webContents;
+    let web = mainWindow.webContents;
     //web.openDevTools();
 
-    var mpd_status = 'stopped';
+    let mpd_status = 'stopped';
 
-    var mpd_client;
+    let mpd_client;
 
     function mpd_init(){
         set_mpd_status('starting');
@@ -47,7 +47,7 @@ app.on('ready', function() {
             function send_song(quiet){
                 mpd_client.sendCommands(["currentsong", "status"], function(err, msg){
                     if (err) throw err;
-                    var song = extract_mpd_info(msg);
+                    let song = extract_mpd_info(msg);
                     mpd_find_coverart(song, config, function(cover){
                         if(cover){
                             song.cover = cover;
@@ -95,8 +95,8 @@ app.on('ready', function() {
         web.send('mpd-status', mpd_status);
     });
 
-    var config_file = app.getPath('userData') + "/slate.json";
-    var config = {};
+    let config_file = app.getPath('userData') + "/slate.json";
+    let config = {};
 
     fs.readFile(config_file, "utf8", function(err, content){
         if(!err){
@@ -114,7 +114,7 @@ app.on('ready', function() {
 
     electron.ipcMain.on('save-config', function save_config(_, _config){
         config = _config;
-        var content = JSON.stringify(config);
+        let content = JSON.stringify(config);
         fs.mkdir(path.dirname(config_file), function(err){
             if(err && err.code != 'EEXIST'){
                 web.send('error', err);
@@ -133,10 +133,10 @@ function extract_mpd_info(str){
     // this function takes info in this format and returns
     // it as an object
 
-    var info = {}
-    var lines = str.split("\n");
-    for(var line of lines){
-        var tmp = line.split(":");
+    let info = {}
+    let lines = str.split("\n");
+    for(let line of lines){
+        let tmp = line.split(":");
         if(tmp.length < 2) continue;
         info[tmp[0]] = tmp.slice(1).join(":").trim();
     }
@@ -144,7 +144,7 @@ function extract_mpd_info(str){
 }
 
 function mpd_find_coverart(song, config, cb){
-    var coverglobs = [
+    let coverglobs = [
         "{*front,*cover,folder}.{jpg,jpeg,gif,png}",
         "*.{jpg,jpeg,gif,png}"
     ];
@@ -158,10 +158,10 @@ function mpd_find_coverart(song, config, cb){
 
     if(config["mpd-dir"] &&
             song.file && song.file.indexOf("://") == -1){
-        var dir = config["mpd-dir"] + path.sep +
+        let dir = config["mpd-dir"] + path.sep +
             path.dirname(song.file);
         function try_glob(){
-            var coverglob = coverglobs.shift();
+            let coverglob = coverglobs.shift();
             if(coverglob){
                 glob(coverglob,{
                     nocase: true,
@@ -185,7 +185,7 @@ function mpd_find_coverart(song, config, cb){
 }
 
 function youtube_login(){
-    var login_window = new BrowserWindow({width: 700, height: 700});
+    let login_window = new BrowserWindow({width: 700, height: 700});
     login_window.setMenu(null);
     login_window.loadURL("https://accounts.google.com/ServiceLogin?service=youtube");
     login_window.on("closed", function(){

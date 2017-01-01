@@ -1,24 +1,24 @@
 "use strict";
 function init(){
-    var fs = require("fs");
-    var process = require("process");
+    let fs = require("fs");
+    let process = require("process");
 
     function nowplaying_init(){
-        var bg_color = "#333";
-        var font = "300 16pt antonio";
-        var fg_color = "#efdee4";
-        var padding = 12;
+        let bg_color = "#333";
+        let font = "300 16pt antonio";
+        let fg_color = "#efdee4";
+        let padding = 12;
 
-        var canvas = document.querySelector("canvas#nowplaying");
-        var width = canvas.width;
-        var height = canvas.height;
+        let canvas = document.querySelector("canvas#nowplaying");
+        let width = canvas.width;
+        let height = canvas.height;
 
-        var stage = new createjs.Stage(canvas);
+        let stage = new createjs.Stage(canvas);
 
-        var bar = new createjs.Container();
+        let bar = new createjs.Container();
         bar.x = 100;
 
-        var bg = new createjs.Shape();
+        let bg = new createjs.Shape();
         bg.points = [ // clockwise, starting from top left
             {x: 0, y: height},
             {x: 0, y: height},
@@ -27,7 +27,7 @@ function init(){
         ];
         bar.addChild(bg);
 
-        var indicator = new createjs.Shape();
+        let indicator = new createjs.Shape();
         indicator.y = 20;
         indicator.x = 16;
         indicator.height = 15;
@@ -37,7 +37,7 @@ function init(){
 
         bar.addChild(indicator);
 
-        var text = new createjs.Text("Sample text", font, fg_color);
+        let text = new createjs.Text("Sample text", font, fg_color);
         text.mask = bg;
         text.x = indicator.x + indicator.width + padding;
         text.y = padding;
@@ -68,7 +68,7 @@ function init(){
 
         stage.addChild(cover);
 
-        var tl = new TimelineLite();
+        let tl = new TimelineLite();
 
         function render(){
             requestAnimationFrame(render);
@@ -118,7 +118,7 @@ function init(){
             text.maxWidth = null;
             text.overflow = false;
             text.overflowx = 0;
-            var bounds = text.getBounds();
+            let bounds = text.getBounds();
             text.realwidth = bounds.width;
             if(text.realwidth > width){
                 text.overflow = true;
@@ -232,12 +232,12 @@ function init(){
         return [take];
     }
 
-    var [np_take] = nowplaying_init();
+    let [np_take] = nowplaying_init();
 
-    var previous_song;
+    let previous_song;
 
     function update_mpd(_, data, quiet){
-        var hash = data.state;
+        let hash = data.state;
         if("file" in data) hash += data.file;
         if("Title" in data) hash += data.Title;
         // this ensures that the notification will show
@@ -252,7 +252,7 @@ function init(){
             np_take("Stopped", data.state);
         } else {
 
-            var part1, part2;
+            let part1, part2;
 
             part1 = data.Artist || data.Name || "Unknown Artist";
             part2 = data.Title || data.file;
@@ -279,11 +279,11 @@ function init(){
 
 
 
-    var ipc = require("electron").ipcRenderer;
+    let ipc = require("electron").ipcRenderer;
     ipc.on("mpd", update_mpd);
 
     function set_mpd_status(_, status, message){
-        var indicator = document.querySelector("#mpd-controls indicator");
+        let indicator = document.querySelector("#mpd-controls indicator");
         indicator.className = status;
         if(message){
             indicator.title = message;
@@ -295,8 +295,8 @@ function init(){
     ipc.on("mpd-status", set_mpd_status);
 
     function chat_message(msg){
-        var chat = document.querySelector(".chat ul");
-        var line = document.createElement("li");
+        let chat = document.querySelector(".chat ul");
+        let line = document.createElement("li");
         if(msg.badge) line.classList.add(msg.badge);
         if(msg.type) line.classList.add(msg.type);
         if(msg.name){
@@ -316,7 +316,7 @@ function init(){
 
     function noop(){};
 
-    var teardown_chat = noop;
+    let teardown_chat = noop;
     function chat_callback(e){
         if(e.channel == "chat"){
             chat_message(e.args[0]);
@@ -327,7 +327,7 @@ function init(){
     }
 
     function set_chat_status(status, message){
-        var indicator = document.querySelector("#chat-controls indicator");
+        let indicator = document.querySelector("#chat-controls indicator");
         indicator.className = status;
         if(message){
             indicator.title = message;
@@ -349,12 +349,12 @@ function init(){
             }
         }
 
-        var container = document.querySelector("#chat-webviews");
-        var chattype = document.querySelector("#chat-type").value;
+        let container = document.querySelector("#chat-webviews");
+        let chattype = document.querySelector("#chat-type").value;
 
         if(chattype == "picarto"){
-            var channel = document.querySelector("#picarto-channel").value;
-            var wv = document.createElement("webview");
+            let channel = document.querySelector("#picarto-channel").value;
+            let wv = document.createElement("webview");
             wv.preload = __dirname + "/wv_ipc.js";
             wv.addEventListener("dom-ready", function(){
                 fs.readFile(__dirname + "/chat_js/picarto.js", "utf8", function(err, js){
@@ -368,8 +368,8 @@ function init(){
             teardown_chat = mk_generic_teardown(container, wv);
         }
         else if(chattype == "hitbox"){
-            var channel = document.querySelector("#hitbox-channel").value;
-            var wv = document.createElement("webview");
+            let channel = document.querySelector("#hitbox-channel").value;
+            let wv = document.createElement("webview");
             wv.preload = __dirname + "/wv_ipc.js";
             wv.addEventListener("dom-ready", function(){
                 fs.readFile(__dirname + "/chat_js/hitbox.js", "utf8", function(err, js){
@@ -384,8 +384,8 @@ function init(){
             teardown_chat = mk_generic_teardown(container, wv);
         }
         else if(chattype == "youtube"){
-            var url = document.querySelector("#yt-url").value;
-            var wv = document.createElement("webview");
+            let url = document.querySelector("#yt-url").value;
+            let wv = document.createElement("webview");
             wv.preload = __dirname + "/wv_ipc.js";
             wv.addEventListener("dom-ready", function(){
                 fs.readFile(__dirname + "/chat_js/youtube.js", "utf8", function(err, js){
@@ -400,9 +400,9 @@ function init(){
             teardown_chat = mk_generic_teardown(container, wv);
         }
         else if(chattype == "twitch"){
-            var channel = config['twitch-channel'];
-            var ffz = config['twitch-ffz'];
-            var wv = document.createElement("webview");
+            let channel = config['twitch-channel'];
+            let ffz = config['twitch-ffz'];
+            let wv = document.createElement("webview");
             wv.preload = __dirname + "/wv_ipc.js";
             wv.addEventListener("dom-ready", function(){
                 fs.readFile(__dirname + "/chat_js/twitch.js", "utf8", function(err, js){
@@ -428,11 +428,11 @@ function init(){
                     set_chat_status("error", err);
                     return;
                 }
-                var lines = content.split("\n\n");
-                var timeout;
+                let lines = content.split("\n\n");
+                let timeout;
                 function send_demo_line(){
-                    var line = lines.shift();
-                    var msg = {
+                    let line = lines.shift();
+                    let msg = {
                         name: "Jerry Seinfeld",
                         content: line,
                         badge: Math.random() > 0.7? "streamer" : null,
@@ -458,21 +458,21 @@ function init(){
         }
     }
 
-    var makechatbutton = document.querySelector("#make-chat");
+    let makechatbutton = document.querySelector("#make-chat");
     makechatbutton.addEventListener("click", make_chat);
 
     const chat_types = [ "youtube", "picarto", "hitbox", "demo", "twitch", "none" ];
 
     function update_chat_form(){
-        var controls = document.querySelector("#chat-controls");
-        var chattype = document.querySelector("#chat-type").value;
+        let controls = document.querySelector("#chat-controls");
+        let chattype = document.querySelector("#chat-type").value;
         for(let type of chat_types){
             controls.classList.remove(type);
         }
         controls.classList.add(chattype);
     }
 
-    var chat_selector = document.querySelector("#chat-type");
+    let chat_selector = document.querySelector("#chat-type");
     chat_selector.addEventListener("change", update_chat_form);
 
     ipc.on('youtube-login-done', make_chat);
@@ -486,13 +486,13 @@ function init(){
         ipc.send('mpd-reload');
     }
 
-    var config = {};
+    let config = {};
 
     ipc.on('config', function recv_config(_, _config){
         config = _config;
-        var keys = Object.keys(config);
+        let keys = Object.keys(config);
         for(let key of keys){
-            var el = document.querySelector("#" + key);
+            let el = document.querySelector("#" + key);
             if(el){
                 if(el.type == "checkbox"){
                     el.checked = config[key];

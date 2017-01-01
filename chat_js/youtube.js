@@ -7,7 +7,7 @@
 
     ipc.sendToHost('status', 'ready');
 
-    var obs = new MutationObserver(relay);
+    let obs = new MutationObserver(relay);
     obs.observe(document.querySelector("ul#all-comments"), {childList: true});
 
     function relay(mutations){

@@ -11,7 +11,7 @@
         ready();
     }
 
-    var obs = new MutationObserver(relay);
+    let obs = new MutationObserver(relay);
     obs.observe(document.querySelector("ul#msgs"), {childList: true});
 
     function relay(mutations){
@@ -21,18 +21,18 @@
                 let msg = {
                     type: null, name: null, content: null, badge: null, avatar: null
                 };
-                var update_el = el.querySelector("span.update");
+                let update_el = el.querySelector("span.update");
                 if(update_el){
                     msg.content = update_el.textContent;
                     msg.type = "status";
                 }
                 else{
                     msg.type = "message"
-                    var name_el = el.querySelector(
+                    let name_el = el.querySelector(
                         ".msgUsername, .msgModeratorUsername, .msgAdminUsername")
                     msg.name = name_el.textContent;
 
-                    var content_el = el.querySelector(".theMsg");
+                    let content_el = el.querySelector(".theMsg");
                     // sanitize message
                     let imgs = Array.from(content_el.querySelectorAll("img"));
                     for(let img of imgs){

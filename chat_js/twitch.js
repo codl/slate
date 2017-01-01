@@ -1,10 +1,10 @@
 "use strict";
 (function(){
 
-    var obs = new MutationObserver(relay);
+    let obs = new MutationObserver(relay);
     obs.observe(document.querySelector("ul.chat-lines"), {childList: true});
 
-    var sent_ready = false;
+    let sent_ready = false;
 
     function relay(mutations){
         for(let mut of mutations){
