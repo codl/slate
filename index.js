@@ -94,7 +94,7 @@ function init(){
         let shown = false;
 
         function bgWidth(){
-            return text.x + text.getMeasuredWidth() + padding;
+            return Math.ceil(text.x + text.getMeasuredWidth() + padding);
         }
 
         function hide(){
