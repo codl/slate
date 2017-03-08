@@ -2,7 +2,15 @@
 (function(){
 
     let obs = new MutationObserver(relay);
-    obs.observe(document.querySelector("ul.chat-lines"), {childList: true});
+    function try_hook(){
+        let element = document.querySelector("ul.chat-lines");
+        if(!element) {
+            setTimeout(try_hook, 500);
+        } else {
+            obs.observe(element, {childList: true});
+        }
+    }
+    try_hook();
 
     let sent_ready = false;
 
